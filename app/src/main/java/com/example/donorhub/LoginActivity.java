@@ -26,19 +26,23 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-
-                if (username.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Please enter both username and password", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Handle login logic here
-                    // For now, assume login is successful
-                    Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                    startActivity(intent);
-                    finish(); // Close the login activity
-                }
+                handleLogin();
             }
         });
+    }
+
+    private void handleLogin() {
+        String username = usernameEditText.getText().toString();
+        String password = passwordEditText.getText().toString();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(LoginActivity.this, "Please enter both username and password", Toast.LENGTH_SHORT).show();
+        } else {
+            // Handle login logic here
+            // For now, assume login is successful
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Close the login activity
+        }
     }
 }

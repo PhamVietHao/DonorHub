@@ -28,6 +28,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".MainActivity" />
+
         <!-- Maps Activity -->
         <activity
             android:name=".MapsActivity"
