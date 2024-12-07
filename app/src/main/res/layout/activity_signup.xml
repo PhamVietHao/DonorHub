@@ -5,7 +5,7 @@
     android:gravity="center"
     android:padding="16dp">
 
-    <!-- Already have an account? and Image1 -->
+    <!-- New user? Register now and Image1 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
             android:layout_weight="1"
             android:textColor="@color/bold_pink"
             android:textStyle="bold"
-            android:text="Already have an account?"
+            android:text="New user? Register now"
             android:textSize="40sp" />
 
         <ImageView
@@ -31,25 +31,45 @@
             android:scaleType="fitCenter" />
     </LinearLayout>
 
-    <!-- Username -->
+    <!-- Name -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Username"
+        android:text="Name"
         android:textSize="20sp"
         android:textColor="@color/pink"
         android:textStyle="bold"
         android:paddingTop="16dp" />
 
     <EditText
-        android:id="@+id/usernameEditText"
+        android:id="@+id/nameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your username"
+        android:hint="Enter your name"
         android:textColor="@color/black"
         android:textColorHint="@color/pale_pink"
         android:backgroundTint="@color/pale_pink"
         android:inputType="text" />
+
+    <!-- Email -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/emailEditTextSignup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your email"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="textEmailAddress" />
 
     <!-- Password -->
     <TextView
@@ -62,7 +82,7 @@
         android:paddingTop="16dp" />
 
     <EditText
-        android:id="@+id/passwordEditText"
+        android:id="@+id/passwordEditTextSignup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter your password"
@@ -71,23 +91,26 @@
         android:backgroundTint="@color/pale_pink"
         android:inputType="textPassword" />
 
-    <!-- Login Button -->
+    <!-- Signup Button -->
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/signupButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="Sign Up"
         android:paddingTop="16dp"
         android:backgroundTint="@color/less_pink"
         android:paddingBottom="16dp" />
 
-    <!-- New user? Register now -->
+    <!-- Already have an account? Login -->
     <TextView
-        android:id="@+id/navigate_to_register"
+        android:id="@+id/navigate_to_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="New user? Register now"
+        android:text="Already have an account? Login"
         android:textSize="16sp"
         android:gravity="center"
         android:paddingTop="16dp" />
 </LinearLayout>
+
+
+
