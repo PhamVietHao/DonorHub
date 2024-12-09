@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
                 if (itemId == R.id.home) {
                     selectedFragment = new HomeFragment();
-                } else if (itemId == R.id.favorite) {
-                    selectedFragment = new FavoriteFragment();
+                } else if (itemId == R.id.donation_site) {
+                    selectedFragment = new DonationSitePage();
                 } else if (itemId == R.id.profile) {
                     selectedFragment = new ProfileFragment();
                 } else {

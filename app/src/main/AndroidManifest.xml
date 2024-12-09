@@ -19,6 +19,12 @@
         <activity
             android:name=".SignupActivity"
             android:exported="false" />
+        <activity
+            android:name=".RegisterDonationSiteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DonationSiteDetailActivity"
+            android:exported="false" />
         <!-- Google Maps API key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"

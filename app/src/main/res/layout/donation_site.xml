@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Donation Sites"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@color/bold_pink"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="16dp" />
+
+    <!-- ProgressBar -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- List of Donation Sites -->
+    <LinearLayout
+        android:id="@+id/donation_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+    </LinearLayout>
+
+    <!-- Floating Action Button -->
+    <ImageButton
+        android:id="@+id/add_donation_site_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/fab_background"
+        android:src="@drawable/ic_add"
+        android:contentDescription="Add Donation Site"
+        android:elevation="6dp"
+        android:scaleType="centerInside"
+        android:backgroundTint="@color/less_pink"
+        app:tint="@color/white" />
+</LinearLayout>

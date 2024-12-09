@@ -1,0 +1,60 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/box_background"
+    android:orientation="vertical"
+    android:layout_marginBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/site_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Example Donation Site"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/site_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="123 Example Street"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/site_blood_types"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Required Blood Types: A+, B+, O-"
+                android:textSize="16sp"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/navigate_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_arrow_right"
+            android:background="@drawable/fab_background"
+            android:contentDescription="Navigate to Information"
+            android:elevation="4dp"
+            android:scaleType="centerInside" />
+    </LinearLayout>
+</LinearLayout>

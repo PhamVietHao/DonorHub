@@ -1,0 +1,141 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="start"
+        android:background="@drawable/fab_background"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="Back to Donation Sites"
+        android:elevation="4dp"
+        android:scaleType="centerInside"
+
+        android:layout_marginBottom="16dp" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register Donation Site"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="16dp" />
+
+    <!-- Event Name -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event Name"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/eventNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the event name"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="text" />
+
+    <!-- Address -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Address"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/addressEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the address"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="text" />
+
+    <!-- Required Blood Types -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Required Blood Types"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/bloodTypesEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter required blood types (comma separated)"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="text" />
+
+    <!-- Latitude -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Latitude"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/latitudeEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter latitude"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="numberDecimal" />
+
+    <!-- Longitude -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Longitude"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/longitudeEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter longitude"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="numberDecimal" />
+
+    <!-- Register Button -->
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:paddingTop="16dp"
+        android:backgroundTint="@color/less_pink"
+        android:paddingBottom="16dp" />
+</LinearLayout>

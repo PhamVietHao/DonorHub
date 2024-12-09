@@ -1,4 +1,4 @@
-package com.example.donorhub;
+package com.example.donorhub.Models;
 
 import java.util.Date;
 
