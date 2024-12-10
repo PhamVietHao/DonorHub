@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,10 +19,12 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import android.widget.ArrayAdapter;
 
 public class SignupActivity extends AppCompatActivity {
 
     private EditText nameEditText, emailEditText, passwordEditText;
+    private Spinner bloodTypeSpinner;
     private Button signupButton;
     private TextView navigateToSignin;
     private FirebaseAuth mAuth;
@@ -37,9 +40,16 @@ public class SignupActivity extends AppCompatActivity {
         nameEditText = findViewById(R.id.nameEditText);
         emailEditText = findViewById(R.id.emailEditTextSignup);
         passwordEditText = findViewById(R.id.passwordEditTextSignup);
+        bloodTypeSpinner = findViewById(R.id.bloodTypeSpinner);
         signupButton = findViewById(R.id.signupButton);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        // Set up the blood type spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.blood_types_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bloodTypeSpinner.setAdapter(adapter);
 
         navigateToSignin.setOnClickListener(v -> navigateToSignin());
         signupButton.setOnClickListener(v -> handleSignup());
@@ -49,8 +59,9 @@ public class SignupActivity extends AppCompatActivity {
         String name = nameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
+        String bloodType = bloodTypeSpinner.getSelectedItem().toString();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || bloodType.isEmpty()) {
             Toast.makeText(SignupActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
         } else {
             mAuth.createUserWithEmailAndPassword(email, password)
@@ -59,7 +70,7 @@ public class SignupActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                                User user = new User(firebaseUser.getUid(), name, email, password, false);
+                                User user = new User(firebaseUser.getUid(), name, email, password, false, bloodType);
                                 db.collection("users").document(firebaseUser.getUid()).set(user)
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d(TAG, "User data successfully written!");

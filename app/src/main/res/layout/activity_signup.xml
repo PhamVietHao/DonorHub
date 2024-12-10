@@ -91,6 +91,22 @@
         android:backgroundTint="@color/pale_pink"
         android:inputType="textPassword" />
 
+    <!-- Blood Type Selection -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Blood Type"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <Spinner
+        android:id="@+id/bloodTypeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/pale_pink" />
+
     <!-- Signup Button -->
     <Button
         android:id="@+id/signupButton"
@@ -111,6 +127,3 @@
         android:gravity="center"
         android:paddingTop="16dp" />
 </LinearLayout>
-
-
-

@@ -11,11 +11,10 @@ import com.example.donorhub.Models.DonationSite;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import java.util.Arrays;
 
 public class RegisterDonationSiteActivity extends AppCompatActivity {
 
-    private EditText eventNameEditText, addressEditText, bloodTypesEditText, latitudeEditText, longitudeEditText;
+    private EditText eventNameEditText, addressEditText, latitudeEditText, longitudeEditText;
     private Button registerButton;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -32,7 +31,6 @@ public class RegisterDonationSiteActivity extends AppCompatActivity {
         // Initialize UI elements
         eventNameEditText = findViewById(R.id.eventNameEditText);
         addressEditText = findViewById(R.id.addressEditText);
-        bloodTypesEditText = findViewById(R.id.bloodTypesEditText);
         latitudeEditText = findViewById(R.id.latitudeEditText);
         longitudeEditText = findViewById(R.id.longitudeEditText);
         registerButton = findViewById(R.id.registerButton);
@@ -48,11 +46,10 @@ public class RegisterDonationSiteActivity extends AppCompatActivity {
     private void handleRegister() {
         String eventName = eventNameEditText.getText().toString().trim();
         String address = addressEditText.getText().toString().trim();
-        String bloodTypes = bloodTypesEditText.getText().toString().trim();
         String latitudeStr = latitudeEditText.getText().toString().trim();
         String longitudeStr = longitudeEditText.getText().toString().trim();
 
-        if (eventName.isEmpty() || address.isEmpty() || bloodTypes.isEmpty() || latitudeStr.isEmpty() || longitudeStr.isEmpty()) {
+        if (eventName.isEmpty() || address.isEmpty() || latitudeStr.isEmpty() || longitudeStr.isEmpty()) {
             Toast.makeText(RegisterDonationSiteActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -67,7 +64,6 @@ public class RegisterDonationSiteActivity extends AppCompatActivity {
                 null,
                 eventName,
                 address,
-                Arrays.asList(bloodTypes.split(",")),
                 latitude,
                 longitude,
                 adminId

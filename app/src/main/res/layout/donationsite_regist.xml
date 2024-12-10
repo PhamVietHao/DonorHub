@@ -15,7 +15,6 @@
         android:contentDescription="Back to Donation Sites"
         android:elevation="4dp"
         android:scaleType="centerInside"
-
         android:layout_marginBottom="16dp" />
 
     <!-- Title -->
@@ -33,7 +32,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Event Name"
+        android:text="Donation site name"
         android:textSize="20sp"
         android:textColor="@color/pink"
         android:textStyle="bold"
@@ -43,7 +42,7 @@
         android:id="@+id/eventNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter the event name"
+        android:hint="Enter the donation site name"
         android:textColor="@color/black"
         android:textColorHint="@color/pale_pink"
         android:backgroundTint="@color/pale_pink"
@@ -64,26 +63,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter the address"
-        android:textColor="@color/black"
-        android:textColorHint="@color/pale_pink"
-        android:backgroundTint="@color/pale_pink"
-        android:inputType="text" />
-
-    <!-- Required Blood Types -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Required Blood Types"
-        android:textSize="20sp"
-        android:textColor="@color/pink"
-        android:textStyle="bold"
-        android:paddingTop="16dp" />
-
-    <EditText
-        android:id="@+id/bloodTypesEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter required blood types (comma separated)"
         android:textColor="@color/black"
         android:textColorHint="@color/pale_pink"
         android:backgroundTint="@color/pale_pink"
@@ -139,3 +118,6 @@
         android:backgroundTint="@color/less_pink"
         android:paddingBottom="16dp" />
 </LinearLayout>
+
+
+

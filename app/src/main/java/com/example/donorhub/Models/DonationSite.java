@@ -6,7 +6,6 @@ public class DonationSite {
     private String id;
     private String name;
     private String address;
-    private List<String> requiredBloodTypes;
     private double latitude;
     private double longitude;
     private String adminId; // Attribute to store the admin user ID
@@ -14,11 +13,10 @@ public class DonationSite {
     // Constructors
     public DonationSite() {}
 
-    public DonationSite(String id, String name, String address, List<String> requiredBloodTypes, double latitude, double longitude, String adminId) {
+    public DonationSite(String id, String name, String address, double latitude, double longitude, String adminId) {
         this.id = id;
         this.name = name;
         this.address = address;
-        this.requiredBloodTypes = requiredBloodTypes;
         this.latitude = latitude;
         this.longitude = longitude;
         this.adminId = adminId;
@@ -33,9 +31,6 @@ public class DonationSite {
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
-
-    public List<String> getRequiredBloodTypes() { return requiredBloodTypes; }
-    public void setRequiredBloodTypes(List<String> requiredBloodTypes) { this.requiredBloodTypes = requiredBloodTypes; }
 
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }

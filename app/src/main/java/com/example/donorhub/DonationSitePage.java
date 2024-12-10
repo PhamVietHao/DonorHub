@@ -91,17 +91,14 @@ public class DonationSitePage extends Fragment {
 
         TextView siteNameTextView = donationSiteView.findViewById(R.id.site_name);
         TextView siteAddressTextView = donationSiteView.findViewById(R.id.site_address);
-        TextView siteBloodTypesTextView = donationSiteView.findViewById(R.id.site_blood_types);
 
         siteNameTextView.setText(donationSite.getName());
         siteAddressTextView.setText(donationSite.getAddress());
-        siteBloodTypesTextView.setText("Required Blood Types: " + String.join(", ", donationSite.getRequiredBloodTypes()));
 
         donationSiteView.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), DonationSiteDetailActivity.class);
             intent.putExtra("siteName", donationSite.getName());
             intent.putExtra("siteAddress", donationSite.getAddress());
-            intent.putExtra("siteBloodTypes", "Required Blood Types: " + String.join(", ", donationSite.getRequiredBloodTypes()));
             startActivity(intent);
         });
 

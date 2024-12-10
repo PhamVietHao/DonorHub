@@ -1,22 +1,23 @@
 package com.example.donorhub.Models;
 
-
 public class User {
     private String id;
     private String name;
     private String email;
     private String password;
     private boolean isAdmin;
+    private String bloodType; // New attribute
 
     // Constructors
     public User() {}
 
-    public User(String id, String name, String email, String password, boolean isAdmin) {
+    public User(String id, String name, String email, String password, boolean isAdmin, String bloodType) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.isAdmin = isAdmin;
+        this.bloodType = bloodType; // Initialize new attribute
     }
 
     // Getters and Setters
@@ -58,5 +59,13 @@ public class User {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public String getBloodType() {
+        return bloodType;
+    }
+
+    public void setBloodType(String bloodType) {
+        this.bloodType = bloodType;
     }
 }

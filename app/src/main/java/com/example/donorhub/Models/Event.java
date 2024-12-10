@@ -1,23 +1,26 @@
 package com.example.donorhub.Models;
 
 import java.util.Date;
+import java.util.List;
 
 public class Event {
     private String id;
     private String siteId;
-    private String userId;
-    private Date date;
-    private String bloodType;
+    private List<String> userIds; // Array to store all users participating in the event
+    private Date startDate; // Start date of the event
+    private Date endDate; // End date of the event
+    private List<String> bloodTypes; // Array to store multiple blood types needed
 
     // Constructors
     public Event() {}
 
-    public Event(String id, String siteId, String userId, Date date, String bloodType) {
+    public Event(String id, String siteId, List<String> userIds, Date startDate, Date endDate, List<String> bloodTypes) {
         this.id = id;
         this.siteId = siteId;
-        this.userId = userId;
-        this.date = date;
-        this.bloodType = bloodType;
+        this.userIds = userIds;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.bloodTypes = bloodTypes;
     }
 
     // Getters and Setters
@@ -37,27 +40,35 @@ public class Event {
         this.siteId = siteId;
     }
 
-    public String getUserId() {
-        return userId;
+    public List<String> getUserIds() {
+        return userIds;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserIds(List<String> userIds) {
+        this.userIds = userIds;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public String getBloodType() {
-        return bloodType;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setBloodType(String bloodType) {
-        this.bloodType = bloodType;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public List<String> getBloodTypes() {
+        return bloodTypes;
+    }
+
+    public void setBloodTypes(List<String> bloodTypes) {
+        this.bloodTypes = bloodTypes;
     }
 }
