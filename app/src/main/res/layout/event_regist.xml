@@ -15,17 +15,16 @@
         android:contentDescription="Back to Donation Sites"
         android:elevation="4dp"
         android:scaleType="centerInside"
-        android:backgroundTint="@color/less_pink"
         android:layout_marginBottom="16dp" />
 
     <!-- Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register Donation Site"
+        android:text="Create Event"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:textColor="@color/bold_pink"
+        android:textColor="@color/black"
         android:layout_gravity="center_horizontal"
         android:paddingBottom="16dp" />
 
@@ -33,7 +32,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Donation site name"
+        android:text="Event Name"
         android:textSize="20sp"
         android:textColor="@color/pink"
         android:textStyle="bold"
@@ -43,87 +42,79 @@
         android:id="@+id/eventNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter the donation site name"
+        android:hint="Enter the event name"
         android:textColor="@color/black"
         android:textColorHint="@color/pale_pink"
         android:backgroundTint="@color/pale_pink"
         android:inputType="text" />
 
-    <!-- Address -->
+    <!-- Start Date -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Address"
+        android:text="Start Date"
         android:textSize="20sp"
         android:textColor="@color/pink"
         android:textStyle="bold"
         android:paddingTop="16dp" />
 
     <EditText
-        android:id="@+id/addressEditText"
+        android:id="@+id/startDateEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter the address"
+        android:hint="Enter the start date (YYYY-MM-DD)"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="date" />
+
+    <!-- End Date -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="End Date"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/endDateEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the end date (YYYY-MM-DD)"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="date" />
+
+    <!-- Blood Types -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Blood Types"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/bloodTypesEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter required blood types (comma separated)"
         android:textColor="@color/black"
         android:textColorHint="@color/pale_pink"
         android:backgroundTint="@color/pale_pink"
         android:inputType="text" />
 
-    <!-- Latitude -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Latitude"
-        android:textSize="20sp"
-        android:textColor="@color/pink"
-        android:textStyle="bold"
-        android:paddingTop="16dp" />
-
-    <EditText
-        android:id="@+id/latitudeEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter latitude"
-        android:textColor="@color/black"
-        android:textColorHint="@color/pale_pink"
-        android:backgroundTint="@color/pale_pink"
-        android:inputType="numberDecimal" />
-
-    <!-- Longitude -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Longitude"
-        android:textSize="20sp"
-        android:textColor="@color/pink"
-        android:textStyle="bold"
-        android:paddingTop="16dp" />
-
-    <EditText
-        android:id="@+id/longitudeEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter longitude"
-        android:textColor="@color/black"
-        android:textColorHint="@color/pale_pink"
-        android:backgroundTint="@color/pale_pink"
-        android:inputType="numberDecimal"
-        />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="30dp"/>
-
-    <!-- Register Button -->
+    <!-- Create Event Button -->
     <Button
-        android:id="@+id/registerButton"
+        android:id="@+id/createEventButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"
+        android:text="Create Event"
         android:paddingTop="16dp"
         android:backgroundTint="@color/less_pink"
         android:paddingBottom="16dp" />
 </LinearLayout>
-
-
-

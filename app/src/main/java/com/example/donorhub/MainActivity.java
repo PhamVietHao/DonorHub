@@ -2,23 +2,46 @@ package com.example.donorhub;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         BottomNavigationView bottomNavbar = findViewById(R.id.bottomNav);
         bottomNavbar.setSelectedItemId(R.id.home);
         bottomNavbar.setOnItemSelectedListener(navListener);
+
+        Boolean adminSite = getIntent().getBooleanExtra("adminSite", false);
+        Log.d(TAG, "adminSite: " + adminSite);
+        if (!adminSite) {
+            bottomNavbar.getMenu().findItem(R.id.donation_site).setVisible(false);
+            Log.d(TAG, "Donation site tab hidden");
+        }
 
         Fragment selectedFragment = new HomeFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framelayout, selectedFragment).commit();
@@ -60,6 +83,4 @@ public class MainActivity extends AppCompatActivity {
                 .setOnCancelListener(dialog -> super.onBackPressed()) // Handle "back" on dialog
                 .show();
     }
-
 }
-

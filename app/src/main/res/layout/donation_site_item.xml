@@ -3,6 +3,7 @@
     android:layout_height="wrap_content"
     android:padding="16dp"
     android:background="@drawable/box_background"
+    android:backgroundTint="@color/blue"
     android:orientation="vertical"
     android:layout_marginBottom="8dp">
 

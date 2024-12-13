@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
@@ -56,11 +57,13 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && !task.getResult().isEmpty()) {
                             // If the user exists, check the password
-                            String storedPassword = task.getResult().getDocuments().get(0).getString("password");
+                            DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                            String storedPassword = document.getString("password");
 
                             if (storedPassword != null && storedPassword.equals(password)) {
                                 // Successful login
-                                navigateToMainActivity();
+                                Boolean adminSite = document.getBoolean("adminSite");
+                                navigateToMainActivity(adminSite);
                             } else {
                                 Toast.makeText(LoginActivity.this, "Invalid password", Toast.LENGTH_SHORT).show();
                             }
@@ -74,8 +77,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToMainActivity() {
+    private void navigateToMainActivity(Boolean adminSite) {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("adminSite", adminSite);
         startActivity(intent);
         finish();
     }

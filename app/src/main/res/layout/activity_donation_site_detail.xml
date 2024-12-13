@@ -4,6 +4,19 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/donationsite_back_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="start"
+        android:background="@drawable/fab_background"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="Back to Donation Sites"
+        android:elevation="4dp"
+        android:scaleType="centerInside"
+        android:layout_marginBottom="16dp" />
+
     <TextView
         android:id="@+id/site_name"
         android:layout_width="wrap_content"
@@ -26,5 +39,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:paddingBottom="16dp" />
+
+    <!-- Event List -->
+    <LinearLayout
+        android:id="@+id/event_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="16dp" />
+
+    <!-- Create Event Button -->
+    <Button
+        android:id="@+id/create_event_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fab_background"
+        android:text="Create Event"
+        android:backgroundTint="@color/less_pink"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp" />
 </LinearLayout>

@@ -1,5 +1,4 @@
 package com.example.donorhub;
-import com.example.donorhub.Models.DonationSite;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.donorhub.Models.DonationSite;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -97,6 +97,7 @@ public class DonationSitePage extends Fragment {
 
         donationSiteView.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), DonationSiteDetailActivity.class);
+            intent.putExtra("siteId", donationSite.getId());
             intent.putExtra("siteName", donationSite.getName());
             intent.putExtra("siteAddress", donationSite.getAddress());
             startActivity(intent);

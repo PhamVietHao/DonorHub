@@ -6,17 +6,19 @@ public class User {
     private String email;
     private String password;
     private boolean isAdmin;
+    private boolean isAdminSite; // New attribute
     private String bloodType; // New attribute
 
     // Constructors
     public User() {}
 
-    public User(String id, String name, String email, String password, boolean isAdmin, String bloodType) {
+    public User(String id, String name, String email, String password, boolean isAdmin, boolean isAdminSite, String bloodType) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.isAdmin = isAdmin;
+        this.isAdminSite = isAdminSite; // Initialize new attribute
         this.bloodType = bloodType; // Initialize new attribute
     }
 
@@ -59,6 +61,14 @@ public class User {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public boolean isAdminSite() {
+        return isAdminSite;
+    }
+
+    public void setAdminSite(boolean adminSite) {
+        isAdminSite = adminSite;
     }
 
     public String getBloodType() {
