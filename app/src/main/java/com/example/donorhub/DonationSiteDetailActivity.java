@@ -24,7 +24,6 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
     private Button createEventButton;
     private FirebaseFirestore db;
     private String siteId;
-    private Boolean isAdminSite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,22 +46,16 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         siteId = getIntent().getStringExtra("siteId");
         String siteName = getIntent().getStringExtra("siteName");
         String siteAddress = getIntent().getStringExtra("siteAddress");
-        isAdminSite = getIntent().getBooleanExtra("isAdminSite", false);
 
         // Log the siteId to ensure it's being passed correctly
         Log.d(TAG, "Site ID: " + siteId);
-        Log.d(TAG, "isAdminSite: " + isAdminSite);
 
         // Set data to UI elements
         siteNameTextView.setText(siteName);
         siteAddressTextView.setText(siteAddress);
 
-        // Conditionally display the create event button
-        if (isAdminSite) {
-            createEventButton.setVisibility(View.VISIBLE);
-        } else {
-            createEventButton.setVisibility(View.GONE);
-        }
+        // Always display the create event button
+        createEventButton.setVisibility(View.VISIBLE);
 
         // Load events for this site
         loadEvents(siteId);
@@ -100,7 +93,7 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         TextView eventDateTextView = eventView.findViewById(R.id.event_date);
 
         eventNameTextView.setText(event.getEventName());
-        eventDateTextView.setText(event.getStartDate().toString() + " - " + event.getEndDate().toString());
+        eventDateTextView.setText(event.getStartDate().toString());
 
         eventListLayout.addView(eventView);
     }

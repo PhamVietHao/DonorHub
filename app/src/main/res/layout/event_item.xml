@@ -1,24 +1,85 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="@drawable/box_background"
     android:backgroundTint="@color/pale_pink"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/event_name"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:paddingBottom="4dp" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/event_date"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/event_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/event_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/event_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/event_blood_types"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/event_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:paddingTop="4dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="@color/black" />
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/join_as_donor_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Join as Donor"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/join_as_volunteer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Join as Volunteer"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/cancel_joining_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel Joining"
+            android:visibility="gone" />
+    </LinearLayout>
 </LinearLayout>

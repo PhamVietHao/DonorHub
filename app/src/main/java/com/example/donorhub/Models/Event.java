@@ -1,30 +1,36 @@
 package com.example.donorhub.Models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Event {
     private String id;
     private String siteId;
-    private String eventName; // New attribute for event name
-    private List<String> userIds; // Array to store all users participating in the event
-    private Date startDate; // Start date of the event
-    private Date endDate; // End date of the event
-    private List<String> bloodTypes; // Array to store multiple blood types needed
-    private List<String> userIdsVolunteer; // New attribute for volunteer user IDs
+    private String eventName;
+    private List<String> userIds;
+    private Date startDate;
+    private Date startTime;
+    private Date endTime;
+    private List<String> bloodTypes;
+    private List<String> userIdsVolunteer;
 
     // Constructors
-    public Event() {}
+    public Event() {
+        this.userIds = new ArrayList<>();
+        this.userIdsVolunteer = new ArrayList<>();
+    }
 
-    public Event(String id, String siteId, String eventName, List<String> userIds, Date startDate, Date endDate, List<String> bloodTypes, List<String> userIdsVolunteer) {
+    public Event(String id, String siteId, String eventName, List<String> userIds, Date startDate, Date startTime, Date endTime, List<String> bloodTypes, List<String> userIdsVolunteer) {
         this.id = id;
         this.siteId = siteId;
         this.eventName = eventName;
-        this.userIds = userIds;
+        this.userIds = userIds != null ? userIds : new ArrayList<>();
         this.startDate = startDate;
-        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.bloodTypes = bloodTypes;
-        this.userIdsVolunteer = userIdsVolunteer; // Initialize new attribute
+        this.userIdsVolunteer = userIdsVolunteer != null ? userIdsVolunteer : new ArrayList<>();
     }
 
     // Getters and Setters
@@ -57,7 +63,7 @@ public class Event {
     }
 
     public void setUserIds(List<String> userIds) {
-        this.userIds = userIds;
+        this.userIds = userIds != null ? userIds : new ArrayList<>();
     }
 
     public Date getStartDate() {
@@ -68,12 +74,20 @@ public class Event {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     public List<String> getBloodTypes() {
@@ -89,9 +103,6 @@ public class Event {
     }
 
     public void setUserIdsVolunteer(List<String> userIdsVolunteer) {
-        this.userIdsVolunteer = userIdsVolunteer;
+        this.userIdsVolunteer = userIdsVolunteer != null ? userIdsVolunteer : new ArrayList<>();
     }
 }
-
-
-

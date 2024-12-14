@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public class CreateEventActivity extends AppCompatActivity {
 
-    private EditText eventNameEditText, startDateEditText, endDateEditText, bloodTypesEditText;
+    private EditText eventNameEditText, startDateEditText, startTimeEditText, endTimeEditText, bloodTypesEditText;
     private Button createEventButton;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -38,7 +38,8 @@ public class CreateEventActivity extends AppCompatActivity {
         // Initialize UI elements
         eventNameEditText = findViewById(R.id.eventNameEditText);
         startDateEditText = findViewById(R.id.startDateEditText);
-        endDateEditText = findViewById(R.id.endDateEditText);
+        startTimeEditText = findViewById(R.id.startTimeEditText);
+        endTimeEditText = findViewById(R.id.endTimeEditText);
         bloodTypesEditText = findViewById(R.id.bloodTypesEditText);
         createEventButton = findViewById(R.id.createEventButton);
 
@@ -56,21 +57,24 @@ public class CreateEventActivity extends AppCompatActivity {
     private void handleCreateEvent() {
         String eventName = eventNameEditText.getText().toString().trim();
         String startDateStr = startDateEditText.getText().toString().trim();
-        String endDateStr = endDateEditText.getText().toString().trim();
+        String startTimeStr = startTimeEditText.getText().toString().trim();
+        String endTimeStr = endTimeEditText.getText().toString().trim();
         String bloodTypesStr = bloodTypesEditText.getText().toString().trim();
 
-        if (eventName.isEmpty() || startDateStr.isEmpty() || endDateStr.isEmpty() || bloodTypesStr.isEmpty()) {
+        if (eventName.isEmpty() || startDateStr.isEmpty() || startTimeStr.isEmpty() || endTimeStr.isEmpty() || bloodTypesStr.isEmpty()) {
             Toast.makeText(CreateEventActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Date startDate, endDate;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        Date startDate, startTime, endTime;
         try {
-            startDate = sdf.parse(startDateStr);
-            endDate = sdf.parse(endDateStr);
+            startDate = dateFormat.parse(startDateStr);
+            startTime = timeFormat.parse(startTimeStr);
+            endTime = timeFormat.parse(endTimeStr);
         } catch (ParseException e) {
-            Toast.makeText(CreateEventActivity.this, "Invalid date format", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CreateEventActivity.this, "Invalid date or time format", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -82,7 +86,8 @@ public class CreateEventActivity extends AppCompatActivity {
                 eventName,
                 null, // No user IDs
                 startDate,
-                endDate,
+                startTime,
+                endTime,
                 bloodTypes,
                 null
         );

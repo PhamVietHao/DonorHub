@@ -68,25 +68,45 @@
         android:backgroundTint="@color/pale_pink"
         android:inputType="date" />
 
-    <!-- End Date -->
+    <!-- Start Time -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="End Date"
+        android:text="Start Time"
         android:textSize="20sp"
         android:textColor="@color/pink"
         android:textStyle="bold"
         android:paddingTop="16dp" />
 
     <EditText
-        android:id="@+id/endDateEditText"
+        android:id="@+id/startTimeEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter the end date (YYYY-MM-DD)"
+        android:hint="Enter the start time (HH:mm)"
         android:textColor="@color/black"
         android:textColorHint="@color/pale_pink"
         android:backgroundTint="@color/pale_pink"
-        android:inputType="date" />
+        android:inputType="time" />
+
+    <!-- End Time -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="End Time"
+        android:textSize="20sp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/endTimeEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the end time (HH:mm)"
+        android:textColor="@color/black"
+        android:textColorHint="@color/pale_pink"
+        android:backgroundTint="@color/pale_pink"
+        android:inputType="time" />
 
     <!-- Blood Types -->
     <TextView

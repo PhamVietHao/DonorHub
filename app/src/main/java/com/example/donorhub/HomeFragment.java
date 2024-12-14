@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment {
         siteAddressTextView.setText(donationSite.getAddress());
 
         donationSiteView.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), DonationSiteDetailActivity.class);
+            Intent intent = new Intent(getActivity(), DonationSiteHome.class);
             intent.putExtra("siteId", donationSite.getId());
             intent.putExtra("siteName", donationSite.getName());
             intent.putExtra("siteAddress", donationSite.getAddress());
