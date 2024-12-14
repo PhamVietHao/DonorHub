@@ -8,12 +8,11 @@ public class User {
     private boolean isAdmin;
     private boolean isAdminSite; // New attribute
     private String bloodType; // New attribute
-    private int milestone; // New attribute
 
     // Constructors
     public User() {}
 
-    public User(String id, String name, String email, String password, boolean isAdmin, boolean isAdminSite, String bloodType, int milestone) {
+    public User(String id, String name, String email, String password, boolean isAdmin, boolean isAdminSite, String bloodType) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -21,7 +20,6 @@ public class User {
         this.isAdmin = isAdmin;
         this.isAdminSite = isAdminSite; // Initialize new attribute
         this.bloodType = bloodType; // Initialize new attribute
-        this.milestone = milestone; // Initialize new attribute
     }
 
     // Getters and Setters
@@ -79,13 +77,5 @@ public class User {
 
     public void setBloodType(String bloodType) {
         this.bloodType = bloodType;
-    }
-
-    public int getMilestone() {
-        return milestone;
-    }
-
-    public void setMilestone(int milestone) {
-        this.milestone = milestone;
     }
 }
