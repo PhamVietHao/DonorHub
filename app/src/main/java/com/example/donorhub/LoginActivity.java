@@ -52,27 +52,27 @@ public class LoginActivity extends AppCompatActivity {
             passwordEditText.setError("Password is required");
             passwordEditText.requestFocus();
         } else {
-            // Check if the email exists in Firestore
-            db.collection("users").whereEqualTo("email", email).get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            // If the user exists, check the password
-                            DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                            String storedPassword = document.getString("password");
-
-                            if (storedPassword != null && storedPassword.equals(password)) {
-                                // Successful login
-                                Boolean adminSite = document.getBoolean("adminSite");
-                                navigateToMainActivity(adminSite);
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Invalid password", Toast.LENGTH_SHORT).show();
-                            }
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            db.collection("users").whereEqualTo("email", email).get()
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful() && !task1.getResult().isEmpty()) {
+                                            DocumentSnapshot document = task1.getResult().getDocuments().get(0);
+                                            Boolean adminSite = document.getBoolean("adminSite");
+                                            navigateToMainActivity(adminSite);
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "User not found", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(LoginActivity.this, "Error retrieving user data", Toast.LENGTH_SHORT).show();
+                                    });
                         } else {
-                            Toast.makeText(LoginActivity.this, "User not found", Toast.LENGTH_SHORT).show();
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(LoginActivity.this, "Error retrieving user data", Toast.LENGTH_SHORT).show();
                     });
         }
     }

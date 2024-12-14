@@ -2,6 +2,7 @@ package com.example.donorhub;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ public class HomeFragment extends Fragment {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
             String uid = firebaseUser.getUid();
+            Log.d("HomeFragment", "User ID: " + uid);
             db.collection("users").document(uid).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
@@ -50,8 +52,10 @@ public class HomeFragment extends Fragment {
                                 String name = documentSnapshot.getString("name");
                                 isAdminSite = documentSnapshot.getBoolean("adminSite");
                                 greetingText.setText("Hello " + name);
+                                Log.d("HomeFragment", "User name: " + name);
                             } else {
                                 greetingText.setText("Hello User");
+                                Log.d("HomeFragment", "Document does not exist");
                             }
                         }
                     })
@@ -59,10 +63,12 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             greetingText.setText("Hello User");
+                            Log.e("HomeFragment", "Error fetching document", e);
                         }
                     });
         } else {
             greetingText.setText("Hello User");
+            Log.d("HomeFragment", "FirebaseUser is null");
         }
 
         // Load donation sites
@@ -85,7 +91,7 @@ public class HomeFragment extends Fragment {
                             addDonationSiteToLayout(donationSite);
                         }
                     } else {
-                        // Handle error
+                        Log.e("HomeFragment", "Error getting donation sites", task.getException());
                     }
                 });
     }
