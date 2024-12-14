@@ -70,7 +70,7 @@ public class SignupActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                                User user = new User(firebaseUser.getUid(), name, email, password, false,false, bloodType);
+                                User user = new User(firebaseUser.getUid(), name, email, password, false, false, bloodType, 0);
                                 db.collection("users").document(firebaseUser.getUid()).set(user)
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d(TAG, "User data successfully written!");
