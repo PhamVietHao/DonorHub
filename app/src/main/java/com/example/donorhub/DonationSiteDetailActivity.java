@@ -15,6 +15,8 @@ import com.example.donorhub.Models.Event;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+
 public class DonationSiteDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "DonationSiteDetail";
@@ -94,6 +96,21 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
 
         eventNameTextView.setText(event.getEventName());
         eventDateTextView.setText(event.getStartDate().toString());
+
+        eventView.setOnClickListener(v -> {
+            Intent intent = new Intent(DonationSiteDetailActivity.this, EventDetailActivity.class);
+            intent.putExtra("eventId", event.getId());
+            intent.putExtra("siteId", event.getSiteId());
+            intent.putExtra("eventName", event.getEventName());
+            intent.putExtra("startDate", event.getStartDate().toString());
+            intent.putExtra("startTime", event.getStartTime().toString());
+            intent.putExtra("endTime", event.getEndTime().toString());
+            intent.putStringArrayListExtra("userIds", new ArrayList<>(event.getUserIds()));
+            intent.putStringArrayListExtra("bloodTypes", new ArrayList<>(event.getBloodTypes()));
+            intent.putStringArrayListExtra("userIdsVolunteer", new ArrayList<>(event.getUserIdsVolunteer()));
+            intent.putStringArrayListExtra("userIds", new ArrayList<>(event.getUserIds()));
+            startActivity(intent);
+        });
 
         eventListLayout.addView(eventView);
     }

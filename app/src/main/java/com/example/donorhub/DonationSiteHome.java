@@ -142,7 +142,7 @@ public class DonationSiteHome extends AppCompatActivity {
                             .addOnSuccessListener(documentSnapshot -> {
                                 if (documentSnapshot.exists()) {
                                     User user = documentSnapshot.toObject(User.class);
-                                    if (user != null && !event.getBloodTypes().contains(user.getBloodType())) {
+                                    if (user != null && !event.getBloodTypes().contains("ALL") && !event.getBloodTypes().contains(user.getBloodType())) {
                                         eventStatusTextView.setText("Your blood type is not suitable for this event.");
                                         joinAsDonorButton.setVisibility(View.GONE);
                                         joinAsVolunteerButton.setVisibility(View.GONE);
