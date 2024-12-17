@@ -10,7 +10,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import com.example.donorhub.Models.Event;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -95,20 +96,27 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         TextView eventDateTextView = eventView.findViewById(R.id.event_date);
 
         eventNameTextView.setText(event.getEventName());
-        eventDateTextView.setText(event.getStartDate().toString());
+
+        // Format the date and time
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String formattedDate = dateFormat.format(event.getStartDate());
+        String formattedStartTime = timeFormat.format(event.getStartTime());
+        String formattedEndTime = timeFormat.format(event.getEndTime());
+
+        eventDateTextView.setText(formattedDate);
 
         eventView.setOnClickListener(v -> {
             Intent intent = new Intent(DonationSiteDetailActivity.this, EventDetailActivity.class);
             intent.putExtra("eventId", event.getId());
             intent.putExtra("siteId", event.getSiteId());
             intent.putExtra("eventName", event.getEventName());
-            intent.putExtra("startDate", event.getStartDate().toString());
-            intent.putExtra("startTime", event.getStartTime().toString());
-            intent.putExtra("endTime", event.getEndTime().toString());
+            intent.putExtra("startDate", formattedDate);
+            intent.putExtra("startTime", formattedStartTime);
+            intent.putExtra("endTime", formattedEndTime);
             intent.putStringArrayListExtra("userIds", new ArrayList<>(event.getUserIds()));
             intent.putStringArrayListExtra("bloodTypes", new ArrayList<>(event.getBloodTypes()));
             intent.putStringArrayListExtra("userIdsVolunteer", new ArrayList<>(event.getUserIdsVolunteer()));
-            intent.putStringArrayListExtra("userIds", new ArrayList<>(event.getUserIds()));
             startActivity(intent);
         });
 

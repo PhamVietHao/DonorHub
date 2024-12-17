@@ -54,7 +54,18 @@
         android:textColor="@color/black"
         android:layout_marginBottom="16dp" />
 
-    <!-- Participant List -->
+    <!-- Donor Count -->
+    <TextView
+        android:id="@+id/donor_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Donors: 0"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Donor Participant List -->
     <LinearLayout
         android:id="@+id/participant_list"
         android:layout_width="match_parent"
@@ -63,6 +74,38 @@
         android:orientation="vertical"
         android:paddingBottom="16dp" />
 
+    <!-- Volunteer Count -->
+    <TextView
+        android:id="@+id/volunteer_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Volunteers: 0"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Volunteer Participant List -->
+    <LinearLayout
+        android:id="@+id/volunteer_participant_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingBottom="16dp" />
+
+    <!-- Event Status Text -->
+    <TextView
+        android:id="@+id/event_status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp" />
+
     <!-- Generate Report Button -->
     <Button
         android:id="@+id/generate_report_button"
@@ -70,5 +113,6 @@
         android:layout_height="wrap_content"
         android:text="Generate Report"
         android:paddingTop="16dp"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp"
+        android:visibility="gone" />
 </LinearLayout>

@@ -22,9 +22,14 @@ public class EventDetailActivity extends AppCompatActivity {
     private TextView eventDateTextView;
     private TextView eventTimeTextView;
     private LinearLayout participantListLayout;
+    private LinearLayout volunteerParticipantListLayout;
     private Button generateReportButton;
+    private TextView eventStatusTextView;
     private ImageButton backbutton;
     private FirebaseFirestore db;
+
+    private int donorCount = 0;
+    private int volunteerCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +41,9 @@ public class EventDetailActivity extends AppCompatActivity {
         eventDateTextView = findViewById(R.id.event_date);
         eventTimeTextView = findViewById(R.id.event_time);
         participantListLayout = findViewById(R.id.participant_list);
+        volunteerParticipantListLayout = findViewById(R.id.volunteer_participant_list);
         generateReportButton = findViewById(R.id.generate_report_button);
+        eventStatusTextView = findViewById(R.id.event_status_text);
         backbutton = findViewById(R.id.back_button);
 
         // Initialize Firestore
@@ -67,9 +74,12 @@ public class EventDetailActivity extends AppCompatActivity {
         eventTimeTextView.setText("Time: " + formattedStartTime + " - " + formattedEndTime);
 
         // Load participants
-        loadParticipants(userIds);
+        loadParticipants(userIds, userIdsVolunteer);
 
         backbutton.setOnClickListener(v -> finish());
+
+        // Check if event has ended
+        checkEventStatus(startDate, endTime);
 
         // Set up generate report button (placeholder functionality)
         generateReportButton.setOnClickListener(v -> {
@@ -97,14 +107,35 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void loadParticipants(ArrayList<String> userIds) {
+    private void loadParticipants(ArrayList<String> userIds, ArrayList<String> userIdsVolunteer) {
+        // Load donors
         for (String userId : userIds) {
             db.collection("users").document(userId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             User user = documentSnapshot.toObject(User.class);
                             if (user != null) {
-                                addParticipantToLayout(user.getName(), user.getBloodType());
+                                addParticipantToLayout(user.getName(), user.getBloodType(), "Donor");
+                                donorCount++;
+                                updateParticipantCount();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        // Handle any errors
+                    });
+        }
+
+        // Load volunteers
+        for (String userId : userIdsVolunteer) {
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            User user = documentSnapshot.toObject(User.class);
+                            if (user != null) {
+                                addParticipantToLayout(user.getName(), user.getBloodType(), "Volunteer");
+                                volunteerCount++;
+                                updateParticipantCount();
                             }
                         }
                     })
@@ -114,20 +145,60 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void addParticipantToLayout(String name, String bloodType) {
-        View participantView = LayoutInflater.from(this).inflate(R.layout.participant_item, participantListLayout, false);
+    private void addParticipantToLayout(String name, String bloodType, String role) {
+        View participantView = LayoutInflater.from(this).inflate(R.layout.participant_item,
+                role.equals("Donor") ? participantListLayout : volunteerParticipantListLayout, false);
 
         TextView participantNameTextView = participantView.findViewById(R.id.participant_name);
         TextView participantBloodTypeTextView = participantView.findViewById(R.id.participant_bloodtype);
-        Button actionButton = participantView.findViewById(R.id.action_button);
+        Button removeParticipantButton = participantView.findViewById(R.id.remove_participant_button);
 
         participantNameTextView.setText(name);
         participantBloodTypeTextView.setText(bloodType);
 
-        actionButton.setOnClickListener(v -> {
-            // Implement action button functionality here
+        removeParticipantButton.setOnClickListener(v -> {
+            // Implement remove participant functionality here
+            if (role.equals("Donor")) {
+                participantListLayout.removeView(participantView);
+                donorCount--;
+            } else {
+                volunteerParticipantListLayout.removeView(participantView);
+                volunteerCount--;
+            }
+            updateParticipantCount();
         });
 
-        participantListLayout.addView(participantView);
+        if (role.equals("Donor")) {
+            participantListLayout.addView(participantView);
+        } else {
+            volunteerParticipantListLayout.addView(participantView);
+        }
+    }
+
+    private void updateParticipantCount() {
+        TextView donorCountTextView = findViewById(R.id.donor_count);
+        TextView volunteerCountTextView = findViewById(R.id.volunteer_count);
+
+        donorCountTextView.setText("Donors: " + donorCount);
+        volunteerCountTextView.setText("Volunteers: " + volunteerCount);
+    }
+
+    private void checkEventStatus(String startDate, String endTime) {
+        try {
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            Date eventEndDateTime = dateTimeFormat.parse(startDate + " " + endTime);
+            Date currentDateTime = new Date();
+
+            if (currentDateTime.after(eventEndDateTime)) {
+                generateReportButton.setVisibility(View.VISIBLE);
+                eventStatusTextView.setVisibility(View.GONE);
+            } else {
+                generateReportButton.setVisibility(View.GONE);
+                eventStatusTextView.setText("The event has not ended");
+                eventStatusTextView.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
