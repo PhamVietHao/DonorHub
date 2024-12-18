@@ -3,20 +3,13 @@ package com.example.donorhub;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new DonationSitePage();
                 } else if (itemId == R.id.profile) {
                     selectedFragment = new ProfileFragment();
+                } else if (itemId == R.id.map) {
+                    selectedFragment = new MapFragment();
                 } else {
                     selectedFragment = new HomeFragment();
                 }

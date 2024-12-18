@@ -40,7 +40,7 @@
         <!-- Google Maps API key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_API_KEY" /> <!-- Login Activity -->
+            android:value="AIzaSyCcZcIR6WJrDMEFqoQMLMhQX_GTybTAnnA" /> <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -51,10 +51,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" /> <!-- Maps Activity -->
-        <activity
-            android:name=".MapsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_maps" />
+
     </application>
 
 </manifest>
