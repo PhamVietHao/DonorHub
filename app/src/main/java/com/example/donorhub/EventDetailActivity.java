@@ -11,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.donorhub.Models.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ArrayList;
+import android.app.AlertDialog;
+import android.util.Log;
 
 public class EventDetailActivity extends AppCompatActivity {
 
@@ -30,6 +33,9 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private int donorCount = 0;
     private int volunteerCount = 0;
+    private String eventId;
+    private ArrayList<String> userIds; // Declare as class-level variable
+    private ArrayList<String> userIdsVolunteer; // Declare as class-level variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +56,15 @@ public class EventDetailActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // Get data from intent
-        String eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra("eventId");
         String siteId = getIntent().getStringExtra("siteId");
         String eventName = getIntent().getStringExtra("eventName");
         String startDate = getIntent().getStringExtra("startDate");
         String startTime = getIntent().getStringExtra("startTime");
         String endTime = getIntent().getStringExtra("endTime");
-        ArrayList<String> userIds = getIntent().getStringArrayListExtra("userIds");
+        userIds = getIntent().getStringArrayListExtra("userIds"); // Initialize here
         ArrayList<String> bloodTypes = getIntent().getStringArrayListExtra("bloodTypes");
-        ArrayList<String> userIdsVolunteer = getIntent().getStringArrayListExtra("userIdsVolunteer");
+        userIdsVolunteer = getIntent().getStringArrayListExtra("userIdsVolunteer"); // Initialize here
 
         // Format date and time
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy", Locale.getDefault());
@@ -108,6 +114,14 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void loadParticipants(ArrayList<String> userIds, ArrayList<String> userIdsVolunteer) {
+        // Clear existing views
+        participantListLayout.removeAllViews();
+        volunteerParticipantListLayout.removeAllViews();
+
+        // Reset counts
+        donorCount = 0;
+        volunteerCount = 0;
+
         // Load donors
         for (String userId : userIds) {
             db.collection("users").document(userId).get()
@@ -115,7 +129,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             User user = documentSnapshot.toObject(User.class);
                             if (user != null) {
-                                addParticipantToLayout(user.getName(), user.getBloodType(), "Donor");
+                                addParticipantToLayout(user.getName(), user.getBloodType(), "Donor", userId);
                                 donorCount++;
                                 updateParticipantCount();
                             }
@@ -133,7 +147,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             User user = documentSnapshot.toObject(User.class);
                             if (user != null) {
-                                addParticipantToLayout(user.getName(), user.getBloodType(), "Volunteer");
+                                addParticipantToLayout(user.getName(), user.getBloodType(), "Volunteer", userId);
                                 volunteerCount++;
                                 updateParticipantCount();
                             }
@@ -145,7 +159,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void addParticipantToLayout(String name, String bloodType, String role) {
+    private void addParticipantToLayout(String name, String bloodType, String role, String userId) {
         View participantView = LayoutInflater.from(this).inflate(R.layout.participant_item,
                 role.equals("Donor") ? participantListLayout : volunteerParticipantListLayout, false);
 
@@ -157,15 +171,26 @@ public class EventDetailActivity extends AppCompatActivity {
         participantBloodTypeTextView.setText(bloodType);
 
         removeParticipantButton.setOnClickListener(v -> {
-            // Implement remove participant functionality here
-            if (role.equals("Donor")) {
-                participantListLayout.removeView(participantView);
-                donorCount--;
-            } else {
-                volunteerParticipantListLayout.removeView(participantView);
-                volunteerCount--;
-            }
-            updateParticipantCount();
+            // Show a warning dialog
+            new AlertDialog.Builder(this)
+                    .setTitle("Remove Participant")
+                    .setMessage("Are you sure you want to remove this participant?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        // Remove participant from UI
+                        if (role.equals("Donor")) {
+                            participantListLayout.removeView(participantView);
+                            donorCount--;
+                        } else {
+                            volunteerParticipantListLayout.removeView(participantView);
+                            volunteerCount--;
+                        }
+                        updateParticipantCount();
+
+                        // Remove participant from Firestore
+                        removeParticipantFromFirestore(userId, role.equals("Donor") ? "userIds" : "userIdsVolunteer");
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
         });
 
         if (role.equals("Donor")) {
@@ -173,6 +198,17 @@ public class EventDetailActivity extends AppCompatActivity {
         } else {
             volunteerParticipantListLayout.addView(participantView);
         }
+    }
+
+    private void removeParticipantFromFirestore(String userId, String listName) {
+        db.collection("events").document(eventId)
+                .update(listName, FieldValue.arrayRemove(userId))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("EventDetailActivity", "Successfully removed participant from Firestore");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("EventDetailActivity", "Error removing participant from Firestore", e);
+                });
     }
 
     private void updateParticipantCount() {

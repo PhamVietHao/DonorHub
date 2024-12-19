@@ -71,6 +71,12 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadEvents(siteId);
+    }
+
     private void loadEvents(String siteId) {
         db.collection("events")
                 .whereEqualTo("siteId", siteId)
@@ -94,6 +100,11 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
 
         TextView eventNameTextView = eventView.findViewById(R.id.event_name);
         TextView eventDateTextView = eventView.findViewById(R.id.event_date);
+        TextView eventTimeTextView = eventView.findViewById(R.id.event_time);
+        TextView eventStatusTextView = eventView.findViewById(R.id.event_status);
+        Button joinAsDonorButton = eventView.findViewById(R.id.join_as_donor_button);
+        Button joinAsVolunteerButton = eventView.findViewById(R.id.join_as_volunteer_button);
+        Button cancelJoiningButton = eventView.findViewById(R.id.cancel_joining_button);
 
         eventNameTextView.setText(event.getEventName());
 
@@ -104,7 +115,14 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         String formattedStartTime = timeFormat.format(event.getStartTime());
         String formattedEndTime = timeFormat.format(event.getEndTime());
 
-        eventDateTextView.setText(formattedDate);
+        eventDateTextView.setText("Date: " + formattedDate);
+        eventTimeTextView.setText("Time: " + formattedStartTime + " - " + formattedEndTime);
+
+        // Hide the buttons and event status
+        joinAsDonorButton.setVisibility(View.GONE);
+        joinAsVolunteerButton.setVisibility(View.GONE);
+        cancelJoiningButton.setVisibility(View.GONE);
+        eventStatusTextView.setVisibility(View.GONE);
 
         eventView.setOnClickListener(v -> {
             Intent intent = new Intent(DonationSiteDetailActivity.this, EventDetailActivity.class);

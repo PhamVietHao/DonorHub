@@ -38,13 +38,13 @@
                 android:textColor="@color/black"
                 android:paddingBottom="8dp" />
 
-            <TextView
-                android:id="@+id/site_blood_types"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Required Blood Types: A+, B+, O-"
-                android:textSize="16sp"
-                android:textColor="@color/black" />
+<!--            <TextView-->
+<!--                android:id="@+id/site_blood_types"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Required Blood Types: A+, B+, O-"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textColor="@color/black" />-->
         </LinearLayout>
 
         <ImageButton

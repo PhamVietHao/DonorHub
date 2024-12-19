@@ -117,7 +117,7 @@ public class DonationSiteHome extends AppCompatActivity {
         eventNameTextView.setText(event.getEventName());
         eventDateTextView.setText("Date: " + startDate);
         eventTimeTextView.setText("Time: " + startTime + " - " + endTime);
-        eventBloodTypesTextView.setText("Required Blood Types: " + String.join(", ", event.getBloodTypes()));
+        eventBloodTypesTextView.setText("Required: " + String.join(", ", event.getBloodTypes()));
 
         // Combine date and time for comparison
         try {
