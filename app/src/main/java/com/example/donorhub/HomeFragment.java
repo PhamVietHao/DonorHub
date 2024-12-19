@@ -20,6 +20,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.example.donorhub.Models.DonationSite;
 import android.widget.ProgressBar;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+
+import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment extends Fragment {
 
     private TextView greetingText;
@@ -28,6 +36,8 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore db;
     private ProgressBar progressBar;
     private Boolean isAdminSite;
+    private EditText searchBox;
+    private List<DonationSite> donationSiteList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +49,7 @@ public class HomeFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         progressBar = view.findViewById(R.id.home_progress_bar);
+        searchBox = view.findViewById(R.id.search_box);
 
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
@@ -74,6 +85,20 @@ public class HomeFragment extends Fragment {
         // Load donation sites
         loadDonationSites();
 
+        // Add TextWatcher to search box
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterDonationSites(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         return view;
     }
 
@@ -86,8 +111,10 @@ public class HomeFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         donationListLayout.removeAllViews();
+                        donationSiteList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             DonationSite donationSite = document.toObject(DonationSite.class);
+                            donationSiteList.add(donationSite);
                             addDonationSiteToLayout(donationSite);
                         }
                     } else {
@@ -115,5 +142,15 @@ public class HomeFragment extends Fragment {
         });
 
         donationListLayout.addView(donationSiteView);
+    }
+
+    private void filterDonationSites(String query) {
+        donationListLayout.removeAllViews();
+        for (DonationSite site : donationSiteList) {
+            if (site.getName().toLowerCase().contains(query.toLowerCase()) ||
+                    site.getAddress().toLowerCase().contains(query.toLowerCase())) {
+                addDonationSiteToLayout(site);
+            }
+        }
     }
 }
