@@ -8,11 +8,11 @@ public class Report {
     private int amountOfBloodB;
     private int amountOfBloodO;
     private int amountOfBloodAB;
+    private int numberOfParticipants;
+    private int numberOfDonors;
+    private String reportTitle;
 
-    // Constructors
-    public Report() {}
-
-    public Report(String id, String eventId, String donationSiteId, int amountOfBloodA, int amountOfBloodB, int amountOfBloodO, int amountOfBloodAB) {
+    public Report(String id, String eventId, String donationSiteId, int amountOfBloodA, int amountOfBloodB, int amountOfBloodO, int amountOfBloodAB, int numberOfParticipants, int numberOfDonors, String reportTitle) {
         this.id = id;
         this.eventId = eventId;
         this.donationSiteId = donationSiteId;
@@ -20,9 +20,12 @@ public class Report {
         this.amountOfBloodB = amountOfBloodB;
         this.amountOfBloodO = amountOfBloodO;
         this.amountOfBloodAB = amountOfBloodAB;
+        this.numberOfParticipants = numberOfParticipants;
+        this.numberOfDonors = numberOfDonors;
+        this.reportTitle = reportTitle;
     }
 
-    // Getters and Setters
+    // Getters and setters for each field
     public String getId() {
         return id;
     }
@@ -77,5 +80,29 @@ public class Report {
 
     public void setAmountOfBloodAB(int amountOfBloodAB) {
         this.amountOfBloodAB = amountOfBloodAB;
+    }
+
+    public int getNumberOfParticipants() {
+        return numberOfParticipants;
+    }
+
+    public void setNumberOfParticipants(int numberOfParticipants) {
+        this.numberOfParticipants = numberOfParticipants;
+    }
+
+    public int getNumberOfDonors() {
+        return numberOfDonors;
+    }
+
+    public void setNumberOfDonors(int numberOfDonors) {
+        this.numberOfDonors = numberOfDonors;
+    }
+
+    public String getReportTitle() {
+        return reportTitle;
+    }
+
+    public void setReportTitle(String reportTitle) {
+        this.reportTitle = reportTitle;
     }
 }

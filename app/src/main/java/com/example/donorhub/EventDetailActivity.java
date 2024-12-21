@@ -1,5 +1,7 @@
 package com.example.donorhub;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,10 +9,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import com.example.donorhub.Models.User;
+import com.example.donorhub.Models.Report;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,8 +24,14 @@ import java.util.Locale;
 import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.util.Log;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventDetailActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
 
     private TextView eventNameTextView;
     private TextView eventDateTextView;
@@ -34,6 +46,8 @@ public class EventDetailActivity extends AppCompatActivity {
     private int donorCount = 0;
     private int volunteerCount = 0;
     private String eventId;
+    private String eventName;
+    private String siteId;
     private ArrayList<String> userIds; // Declare as class-level variable
     private ArrayList<String> userIdsVolunteer; // Declare as class-level variable
 
@@ -41,6 +55,11 @@ public class EventDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_detail_activity);
+
+        // Check and request storage permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE_PERMISSION);
+        }
 
         // Initialize UI elements
         eventNameTextView = findViewById(R.id.event_name);
@@ -57,8 +76,8 @@ public class EventDetailActivity extends AppCompatActivity {
 
         // Get data from intent
         eventId = getIntent().getStringExtra("eventId");
-        String siteId = getIntent().getStringExtra("siteId");
-        String eventName = getIntent().getStringExtra("eventName");
+        siteId = getIntent().getStringExtra("siteId");
+        eventName = getIntent().getStringExtra("eventName");
         String startDate = getIntent().getStringExtra("startDate");
         String startTime = getIntent().getStringExtra("startTime");
         String endTime = getIntent().getStringExtra("endTime");
@@ -87,10 +106,8 @@ public class EventDetailActivity extends AppCompatActivity {
         // Check if event has ended
         checkEventStatus(startDate, endTime);
 
-        // Set up generate report button (placeholder functionality)
-        generateReportButton.setOnClickListener(v -> {
-            // Implement report generation logic here
-        });
+        // Set up generate report button
+        generateReportButton.setOnClickListener(v -> generateReport(eventName, siteId));
     }
 
     private String formatDate(String dateString, SimpleDateFormat dateFormat) {
@@ -112,7 +129,6 @@ public class EventDetailActivity extends AppCompatActivity {
             return timeString;
         }
     }
-
     private void loadParticipants(ArrayList<String> userIds, ArrayList<String> userIdsVolunteer) {
         // Clear existing views
         participantListLayout.removeAllViews();
@@ -235,6 +251,95 @@ public class EventDetailActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void generateReport(String eventName, String siteId) {
+        int[] bloodAmounts = new int[4]; // Index 0: A, 1: B, 2: O, 3: AB
+        AtomicInteger remainingUsers = new AtomicInteger(userIds.size());
+
+        for (String userId : userIds) {
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            User user = documentSnapshot.toObject(User.class);
+                            if (user != null) {
+                                switch (user.getBloodType()) {
+                                    case "A":
+                                        bloodAmounts[0] += 350;
+                                        break;
+                                    case "B":
+                                        bloodAmounts[1] += 350;
+                                        break;
+                                    case "O":
+                                        bloodAmounts[2] += 350;
+                                        break;
+                                    case "AB":
+                                        bloodAmounts[3] += 350;
+                                        break;
+                                }
+                            }
+                        }
+                        if (remainingUsers.decrementAndGet() == 0) {
+                            createAndSaveReport(eventName, siteId, bloodAmounts);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        if (remainingUsers.decrementAndGet() == 0) {
+                            createAndSaveReport(eventName, siteId, bloodAmounts);
+                        }
+                    });
+        }
+    }
+
+    private void createAndSaveReport(String eventName, String siteId, int[] bloodAmounts) {
+        Report report = new Report(
+                eventId,
+                eventId,
+                siteId,
+                bloodAmounts[0],
+                bloodAmounts[1],
+                bloodAmounts[2],
+                bloodAmounts[3],
+                donorCount + volunteerCount,
+                donorCount,
+                eventName + " Report"
+        );
+
+        db.collection("reports").document(report.getId()).set(report)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("EventDetailActivity", "Report successfully written!");
+                    generateReportFile(report);
+                    Toast.makeText(EventDetailActivity.this, "Report generated and saved successfully!", Toast.LENGTH_LONG).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("EventDetailActivity", "Error writing report", e);
+                    Toast.makeText(EventDetailActivity.this, "Failed to generate report.", Toast.LENGTH_LONG).show();
+                });
+    }
+
+    private void generateReportFile(Report report) {
+        String reportContent = "Report Title: " + report.getReportTitle() + "\n" +
+                "Event ID: " + report.getEventId() + "\n" +
+                "Donation Site ID: " + report.getDonationSiteId() + "\n" +
+                "Number of Participants: " + report.getNumberOfParticipants() + "\n" +
+                "Number of Donors: " + report.getNumberOfDonors() + "\n" +
+                "Amount of Blood A: " + report.getAmountOfBloodA() + " ml\n" +
+                "Amount of Blood B: " + report.getAmountOfBloodB() + " ml\n" +
+                "Amount of Blood O: " + report.getAmountOfBloodO() + " ml\n" +
+                "Amount of Blood AB: " + report.getAmountOfBloodAB() + " ml\n";
+
+        try {
+            File reportFile = new File(getExternalFilesDir(null), report.getReportTitle() + ".txt");
+            FileOutputStream fos = new FileOutputStream(reportFile);
+            fos.write(reportContent.getBytes());
+            fos.close();
+
+            Log.d("EventDetailActivity", "Report file generated: " + reportFile.getAbsolutePath());
+            Toast.makeText(this, "Report file generated: " + reportFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Log.e("EventDetailActivity", "Error generating report file", e);
+            Toast.makeText(this, "Error generating report file.", Toast.LENGTH_LONG).show();
         }
     }
 }

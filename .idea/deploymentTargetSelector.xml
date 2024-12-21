@@ -7,10 +7,10 @@
       </SelectionState>
       <SelectionState runConfigName="DonorHub">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-12-18T08:34:49.083933Z">
+        <DropdownSelection timestamp="2024-12-21T16:37:12.965934Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/mac/.android/avd/Pixel_7_Pro_API_35.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/mac/.android/avd/Pixel_7_Pro_API_29.avd" />
             </handle>
           </Target>
         </DropdownSelection>
