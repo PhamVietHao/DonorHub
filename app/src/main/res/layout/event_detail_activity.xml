@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -31,8 +30,9 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/black"
-            android:gravity="center_vertical"
-            android:paddingStart="8dp" />
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:layout_marginEnd="32dp" />
     </LinearLayout>
 
     <!-- Date and Time -->
@@ -66,13 +66,18 @@
         android:layout_marginBottom="8dp" />
 
     <!-- Donor Participant List -->
-    <LinearLayout
-        android:id="@+id/participant_list"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:id="@+id/participant_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <!-- Volunteer Count -->
     <TextView
@@ -86,13 +91,18 @@
         android:layout_marginBottom="8dp" />
 
     <!-- Volunteer Participant List -->
-    <LinearLayout
-        android:id="@+id/volunteer_participant_list"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:id="@+id/volunteer_participant_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <!-- Event Status Text -->
     <TextView

@@ -79,6 +79,10 @@ public class CreateEventActivity extends AppCompatActivity {
         }
 
         List<String> bloodTypes = Arrays.asList(bloodTypesStr.split(","));
+        // Trim each blood type
+        for (int i = 0; i < bloodTypes.size(); i++) {
+            bloodTypes.set(i, bloodTypes.get(i).trim());
+        }
 
         Event event = new Event(
                 null,

@@ -63,11 +63,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Request location permissions
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        } else {
-            getCurrentLocation();
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Fetch the current location every time the fragment is resumed
+        getCurrentLocation();
     }
 
     @Override

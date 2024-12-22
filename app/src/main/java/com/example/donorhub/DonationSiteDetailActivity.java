@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -213,12 +214,21 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
                                 .append("Total Donors: ").append(totalDonors).append("\n")
                                 .append("Total Volunteers: ").append(totalVolunteers).append("\n");
 
-                        saveReportToFile(siteNameTextView.getText().toString(), reportContent.toString());
+                        showDownloadConfirmationDialog(siteNameTextView.getText().toString(), reportContent.toString());
                     } else {
                         Log.e(TAG, "Error getting reports: ", task.getException());
                         Toast.makeText(this, "Error getting reports", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void showDownloadConfirmationDialog(String siteName, String reportContent) {
+        new AlertDialog.Builder(this)
+                .setTitle("Download Report")
+                .setMessage("Do you want to download the report file?")
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> saveReportToFile(siteName, reportContent))
+                .setNegativeButton(android.R.string.no, null)
+                .show();
     }
 
     private void saveReportToFile(String siteName, String reportContent) {
@@ -237,5 +247,4 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Error generating report file.", Toast.LENGTH_LONG).show();
         }
     }
-
 }

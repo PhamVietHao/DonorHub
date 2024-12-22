@@ -37,12 +37,24 @@
 
         <ImageButton
             android:id="@+id/generate_donationsite_report_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_alignParentEnd="true"
             android:background="@drawable/fab_background"
             android:src="@drawable/ic_report"
             android:contentDescription="Generate Report"
+            android:elevation="4dp"
+            android:scaleType="centerInside" />
+
+        <ImageButton
+            android:id="@+id/navigate_to_map_button"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_toStartOf="@id/generate_donationsite_report_button"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/fab_background"
+            android:src="@drawable/ic_map"
+            android:contentDescription="Navigate to Map"
             android:elevation="4dp"
             android:scaleType="centerInside" />
     </RelativeLayout>

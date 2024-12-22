@@ -260,8 +260,11 @@ public class EventDetailActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    // Report already exists, do not create a new one
-                    Toast.makeText(this, "The report already exists in the database", Toast.LENGTH_LONG).show();
+                    // Report already exists in the database, ask for confirmation to download
+                    Report report = document.toObject(Report.class);
+                    if (report != null) {
+                        showDownloadConfirmationDialog(report);
+                    }
                 } else {
                     // Report does not exist, proceed with creating and saving the report
                     int[] bloodAmounts = new int[4]; // Index 0: A, 1: B, 2: O, 3: AB
@@ -324,12 +327,21 @@ public class EventDetailActivity extends AppCompatActivity {
         db.collection("reports").document(report.getId()).set(report)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("EventDetailActivity", "Report successfully written!");
-                    generateReportFile(report);
+                    showDownloadConfirmationDialog(report);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("EventDetailActivity", "Error writing report", e);
                     Toast.makeText(EventDetailActivity.this, "Failed to generate report.", Toast.LENGTH_LONG).show();
                 });
+    }
+
+    private void showDownloadConfirmationDialog(Report report) {
+        new AlertDialog.Builder(this)
+                .setTitle("Download Report")
+                .setMessage("Do you want to download the report file?")
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> generateReportFile(report))
+                .setNegativeButton(android.R.string.no, null)
+                .show();
     }
 
     private void generateReportFile(Report report) {
@@ -344,11 +356,6 @@ public class EventDetailActivity extends AppCompatActivity {
                 "Amount of Blood AB: " + report.getAmountOfBloodAB() + " ml\n";
 
         File reportFile = new File(getExternalFilesDir(null), report.getReportTitle() + ".txt");
-
-        if (reportFile.exists()) {
-            Toast.makeText(this, "The file already exists on your device", Toast.LENGTH_LONG).show();
-            return;
-        }
 
         try {
             FileOutputStream fos = new FileOutputStream(reportFile);
