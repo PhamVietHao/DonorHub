@@ -1,6 +1,8 @@
 package com.example.donorhub;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,22 +11,32 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import com.example.donorhub.Models.Event;
+import com.example.donorhub.Models.Report;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class DonationSiteDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "DonationSiteDetail";
+    private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
+
     private TextView siteNameTextView;
     private TextView siteAddressTextView;
     private LinearLayout eventListLayout;
     private Button createEventButton;
+    private ImageButton generateReportButton;
     private FirebaseFirestore db;
     private String siteId;
 
@@ -38,6 +50,7 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         siteAddressTextView = findViewById(R.id.site_address);
         eventListLayout = findViewById(R.id.event_list);
         createEventButton = findViewById(R.id.create_event_button);
+        generateReportButton = findViewById(R.id.generate_donationsite_report_button);
 
         ImageButton backButton = findViewById(R.id.donationsite_back_button);
         backButton.setOnClickListener(v -> finish());
@@ -69,12 +82,32 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
             intent.putExtra("siteId", siteId);
             startActivity(intent);
         });
+
+        // Set up generate report button
+        generateReportButton.setOnClickListener(v -> {
+            // Check and request storage permissions
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE_PERMISSION);
+            } else {
+                generateReport();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadEvents(siteId);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_STORAGE_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            generateReport();
+        } else {
+            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadEvents(String siteId) {
@@ -140,4 +173,69 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
 
         eventListLayout.addView(eventView);
     }
+    private void generateReport() {
+        db.collection("reports")
+                .whereEqualTo("donationSiteId", siteId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        int totalBloodA = 0;
+                        int totalBloodB = 0;
+                        int totalBloodO = 0;
+                        int totalBloodAB = 0;
+                        int totalDonors = 0;
+                        int totalVolunteers = 0;
+
+                        StringBuilder reportContent = new StringBuilder("Donation Site: " + siteNameTextView.getText().toString() + "\n\n");
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Report report = document.toObject(Report.class);
+                            totalBloodA += report.getAmountOfBloodA();
+                            totalBloodB += report.getAmountOfBloodB();
+                            totalBloodO += report.getAmountOfBloodO();
+                            totalBloodAB += report.getAmountOfBloodAB();
+                            totalDonors += report.getNumberOfDonors();
+                            totalVolunteers += (report.getNumberOfParticipants() - report.getNumberOfDonors());
+
+                            reportContent.append("Report Title: ").append(report.getReportTitle()).append("\n")
+                                    .append("Blood A: ").append(report.getAmountOfBloodA()).append(" ml\n")
+                                    .append("Blood B: ").append(report.getAmountOfBloodB()).append(" ml\n")
+                                    .append("Blood O: ").append(report.getAmountOfBloodO()).append(" ml\n")
+                                    .append("Blood AB: ").append(report.getAmountOfBloodAB()).append(" ml\n")
+                                    .append("Donors: ").append(report.getNumberOfDonors()).append("\n")
+                                    .append("Volunteers: ").append(report.getNumberOfParticipants() - report.getNumberOfDonors()).append("\n\n");
+                        }
+
+                        reportContent.append("Total Blood A: ").append(totalBloodA).append(" ml\n")
+                                .append("Total Blood B: ").append(totalBloodB).append(" ml\n")
+                                .append("Total Blood O: ").append(totalBloodO).append(" ml\n")
+                                .append("Total Blood AB: ").append(totalBloodAB).append(" ml\n")
+                                .append("Total Donors: ").append(totalDonors).append("\n")
+                                .append("Total Volunteers: ").append(totalVolunteers).append("\n");
+
+                        saveReportToFile(siteNameTextView.getText().toString(), reportContent.toString());
+                    } else {
+                        Log.e(TAG, "Error getting reports: ", task.getException());
+                        Toast.makeText(this, "Error getting reports", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void saveReportToFile(String siteName, String reportContent) {
+        String fileName = siteName + "_Report.txt";
+        File reportFile = new File(getExternalFilesDir(null), fileName);
+
+        try {
+            FileOutputStream fos = new FileOutputStream(reportFile);
+            fos.write(reportContent.getBytes());
+            fos.close();
+
+            Log.d(TAG, "Report file generated: " + reportFile.getAbsolutePath());
+            Toast.makeText(this, "Report file generated: " + reportFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Log.e(TAG, "Error generating report file", e);
+            Toast.makeText(this, "Error generating report file.", Toast.LENGTH_LONG).show();
+        }
+    }
+
 }

@@ -34,6 +34,17 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             android:paddingBottom="8dp" />
+
+        <ImageButton
+            android:id="@+id/generate_donationsite_report_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/fab_background"
+            android:src="@drawable/ic_report"
+            android:contentDescription="Generate Report"
+            android:elevation="4dp"
+            android:scaleType="centerInside" />
     </RelativeLayout>
 
     <!-- Site Address with Label -->

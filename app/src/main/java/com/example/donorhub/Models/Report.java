@@ -12,6 +12,12 @@ public class Report {
     private int numberOfDonors;
     private String reportTitle;
 
+    // No-argument constructor
+    public Report() {
+        // Required for Firestore deserialization
+    }
+
+    // Parameterized constructor
     public Report(String id, String eventId, String donationSiteId, int amountOfBloodA, int amountOfBloodB, int amountOfBloodO, int amountOfBloodAB, int numberOfParticipants, int numberOfDonors, String reportTitle) {
         this.id = id;
         this.eventId = eventId;
@@ -25,7 +31,7 @@ public class Report {
         this.reportTitle = reportTitle;
     }
 
-    // Getters and setters for each field
+    // Getters and setters
     public String getId() {
         return id;
     }
