@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donorhub.Models.DonationSite;
+import com.example.donorhub.Models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,6 +26,7 @@ public class DonationSitePage extends Fragment {
     private FirebaseFirestore db;
     private LinearLayout donationListLayout;
     private ProgressBar progressBar;
+    private boolean isAdmin;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,14 +47,60 @@ public class DonationSitePage extends Fragment {
             startActivity(intent);
         });
 
+        // Check if the user is an admin
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            db.collection("users").document(currentUser.getUid()).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            User user = documentSnapshot.toObject(User.class);
+                            if (user != null && user.isAdmin()) {
+                                isAdmin = true;
+                                // User is an admin, load all donation sites
+                                loadAllDonationSites();
+                            } else {
+                                isAdmin = false;
+                                // User is not an admin, load donation sites for this admin
+                                loadDonationSites();
+                            }
+                        }
+                    });
+        }
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Load donation sites when the fragment resumes
-        loadDonationSites();
+        // Load donation sites when the fragment resumes based on admin status
+        if (isAdmin) {
+            loadAllDonationSites();
+        } else {
+            loadDonationSites();
+        }
+    }
+
+    private void loadAllDonationSites() {
+        // Show the ProgressBar
+        progressBar.setVisibility(View.VISIBLE);
+
+        db.collection("donation_sites")
+                .get()
+                .addOnCompleteListener(task -> {
+                    // Hide the ProgressBar
+                    progressBar.setVisibility(View.GONE);
+
+                    if (task.isSuccessful()) {
+                        donationListLayout.removeAllViews();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            DonationSite donationSite = document.toObject(DonationSite.class);
+                            addDonationSiteToLayout(donationSite);
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Error getting donation sites", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void loadDonationSites() {

@@ -10,6 +10,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.example.donorhub.Models.User;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,15 +31,31 @@ public class MainActivity extends AppCompatActivity {
         bottomNavbar.setSelectedItemId(R.id.home);
         bottomNavbar.setOnItemSelectedListener(navListener);
 
-        Boolean adminSite = getIntent().getBooleanExtra("adminSite", false);
-        Log.d(TAG, "adminSite: " + adminSite);
-        if (!adminSite) {
-            bottomNavbar.getMenu().findItem(R.id.donation_site).setVisible(false);
-            Log.d(TAG, "Donation site tab hidden");
-        }
+        checkAdminStatus(bottomNavbar);
 
         Fragment selectedFragment = new HomeFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framelayout, selectedFragment).commit();
+    }
+
+    private void checkAdminStatus(BottomNavigationView bottomNavbar) {
+        String userId = mAuth.getCurrentUser().getUid();
+        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    User user = document.toObject(User.class);
+                    if (user != null && (user.isAdmin() || user.isAdminSite())) {
+                        bottomNavbar.getMenu().findItem(R.id.donation_site).setVisible(true);
+                        Log.d(TAG, "Donation site tab visible");
+                    } else {
+                        bottomNavbar.getMenu().findItem(R.id.donation_site).setVisible(false);
+                        Log.d(TAG, "Donation site tab hidden");
+                    }
+                }
+            } else {
+                Log.d(TAG, "Failed to get user data", task.getException());
+            }
+        });
     }
 
     private NavigationBarView.OnItemSelectedListener navListener =

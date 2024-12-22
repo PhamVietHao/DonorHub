@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.example.donorhub.Models.User;
 import com.example.donorhub.Models.Report;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FieldValue;
 import java.text.SimpleDateFormat;
@@ -255,41 +256,55 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void generateReport(String eventName, String siteId) {
-        int[] bloodAmounts = new int[4]; // Index 0: A, 1: B, 2: O, 3: AB
-        AtomicInteger remainingUsers = new AtomicInteger(userIds.size());
+        db.collection("reports").document(eventId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // Report already exists, do not create a new one
+                    Toast.makeText(this, "The report already exists in the database", Toast.LENGTH_LONG).show();
+                } else {
+                    // Report does not exist, proceed with creating and saving the report
+                    int[] bloodAmounts = new int[4]; // Index 0: A, 1: B, 2: O, 3: AB
+                    AtomicInteger remainingUsers = new AtomicInteger(userIds.size());
 
-        for (String userId : userIds) {
-            db.collection("users").document(userId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            User user = documentSnapshot.toObject(User.class);
-                            if (user != null) {
-                                switch (user.getBloodType()) {
-                                    case "A":
-                                        bloodAmounts[0] += 350;
-                                        break;
-                                    case "B":
-                                        bloodAmounts[1] += 350;
-                                        break;
-                                    case "O":
-                                        bloodAmounts[2] += 350;
-                                        break;
-                                    case "AB":
-                                        bloodAmounts[3] += 350;
-                                        break;
-                                }
-                            }
-                        }
-                        if (remainingUsers.decrementAndGet() == 0) {
-                            createAndSaveReport(eventName, siteId, bloodAmounts);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        if (remainingUsers.decrementAndGet() == 0) {
-                            createAndSaveReport(eventName, siteId, bloodAmounts);
-                        }
-                    });
-        }
+                    for (String userId : userIds) {
+                        db.collection("users").document(userId).get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        User user = documentSnapshot.toObject(User.class);
+                                        if (user != null) {
+                                            switch (user.getBloodType()) {
+                                                case "A":
+                                                    bloodAmounts[0] += 350;
+                                                    break;
+                                                case "B":
+                                                    bloodAmounts[1] += 350;
+                                                    break;
+                                                case "O":
+                                                    bloodAmounts[2] += 350;
+                                                    break;
+                                                case "AB":
+                                                    bloodAmounts[3] += 350;
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                    if (remainingUsers.decrementAndGet() == 0) {
+                                        createAndSaveReport(eventName, siteId, bloodAmounts);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    if (remainingUsers.decrementAndGet() == 0) {
+                                        createAndSaveReport(eventName, siteId, bloodAmounts);
+                                    }
+                                });
+                    }
+                }
+            } else {
+                Log.e("EventDetailActivity", "Error checking report existence", task.getException());
+                Toast.makeText(this, "Error checking report existence", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void createAndSaveReport(String eventName, String siteId, int[] bloodAmounts) {
@@ -310,7 +325,6 @@ public class EventDetailActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     Log.d("EventDetailActivity", "Report successfully written!");
                     generateReportFile(report);
-                    Toast.makeText(EventDetailActivity.this, "Report generated and saved successfully!", Toast.LENGTH_LONG).show();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("EventDetailActivity", "Error writing report", e);
@@ -329,8 +343,14 @@ public class EventDetailActivity extends AppCompatActivity {
                 "Amount of Blood O: " + report.getAmountOfBloodO() + " ml\n" +
                 "Amount of Blood AB: " + report.getAmountOfBloodAB() + " ml\n";
 
+        File reportFile = new File(getExternalFilesDir(null), report.getReportTitle() + ".txt");
+
+        if (reportFile.exists()) {
+            Toast.makeText(this, "The file already exists on your device", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         try {
-            File reportFile = new File(getExternalFilesDir(null), report.getReportTitle() + ".txt");
             FileOutputStream fos = new FileOutputStream(reportFile);
             fos.write(reportContent.getBytes());
             fos.close();
