@@ -137,6 +137,8 @@ public class HomeFragment extends Fragment {
             intent.putExtra("siteId", donationSite.getId());
             intent.putExtra("siteName", donationSite.getName());
             intent.putExtra("siteAddress", donationSite.getAddress());
+            intent.putExtra("siteLatitude", donationSite.getLatitude());
+            intent.putExtra("siteLongitude", donationSite.getLongitude());
             intent.putExtra("isAdminSite", isAdminSite);
             startActivity(intent);
         });

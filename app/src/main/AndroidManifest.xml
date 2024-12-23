@@ -51,7 +51,10 @@
             android:exported="false" />
         <activity
             android:name=".DonationSiteHome"
-            android:exported="false" /> <!-- Login Activity -->
+            android:exported="false" />
+        <activity
+            android:name=".MapsGuideActivity"
+            android:exported="false" /><!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">

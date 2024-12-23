@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_margin="16dp"
+        android:background="@drawable/fab_background"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="Back"
+        android:elevation="4dp"
+        android:backgroundTint="@color/bold_pink"
+        android:scaleType="centerInside" />
+
+    <ImageButton
+        android:id="@+id/home_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:background="@drawable/fab_background"
+        android:src="@drawable/ic_home_button"
+        android:contentDescription="Home"
+        android:elevation="4dp"
+        android:backgroundTint="@color/bold_pink"
+        android:scaleType="centerInside" />
+</RelativeLayout>

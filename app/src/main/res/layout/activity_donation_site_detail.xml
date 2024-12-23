@@ -40,23 +40,25 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_alignParentEnd="true"
+            android:layout_marginEnd="-15dp"
             android:background="@drawable/fab_background"
-            android:src="@drawable/ic_report"
             android:contentDescription="Generate Report"
             android:elevation="4dp"
-            android:scaleType="centerInside" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_report" />
 
         <ImageButton
             android:id="@+id/navigate_to_map_button"
             android:layout_width="64dp"
             android:layout_height="64dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginEnd="-28dp"
             android:layout_toStartOf="@id/generate_donationsite_report_button"
-            android:layout_marginEnd="16dp"
             android:background="@drawable/fab_background"
-            android:src="@drawable/ic_map"
             android:contentDescription="Navigate to Map"
             android:elevation="4dp"
-            android:scaleType="centerInside" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_map" />
     </RelativeLayout>
 
     <!-- Site Address with Label -->
@@ -91,14 +93,27 @@
         android:textColor="@color/black"
         android:paddingBottom="16dp" />
 
-    <!-- Event List -->
-    <LinearLayout
-        android:id="@+id/event_list"
+    <!-- Scrollable Event List -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingBottom="16dp" />
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <!-- Event List -->
+            <LinearLayout
+                android:id="@+id/event_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp" />
+        </LinearLayout>
+    </ScrollView>
 
     <!-- Create Event Button -->
     <Button

@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Top Bar with Back Button and Site Name -->
+    <!-- Top Bar with Back Button, Site Name, and Map Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +36,17 @@
             android:textColor="@color/black"
             android:gravity="center"
             android:layout_marginEnd="32dp"/>
+
+        <!-- Navigate to Map Button -->
+        <ImageButton
+            android:id="@+id/navigate_to_map_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/fab_background"
+            android:src="@drawable/ic_map"
+            android:contentDescription="Navigate to Map"
+            android:elevation="4dp"
+            android:scaleType="centerInside" />
     </LinearLayout>
 
     <!-- Site Address with Label -->
@@ -70,12 +81,17 @@
         android:textColor="@color/black"
         android:paddingBottom="16dp" />
 
-    <!-- Event List -->
-    <LinearLayout
-        android:id="@+id/event_list"
+    <!-- Scrollable Event List -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="16dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingBottom="16dp">
 
+        <LinearLayout
+            android:id="@+id/event_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </LinearLayout>

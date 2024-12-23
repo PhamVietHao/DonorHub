@@ -38,8 +38,11 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
     private LinearLayout eventListLayout;
     private Button createEventButton;
     private ImageButton generateReportButton;
+    private ImageButton navigateToMapButton;
     private FirebaseFirestore db;
     private String siteId;
+    private double siteLatitude;
+    private double siteLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         eventListLayout = findViewById(R.id.event_list);
         createEventButton = findViewById(R.id.create_event_button);
         generateReportButton = findViewById(R.id.generate_donationsite_report_button);
+        navigateToMapButton = findViewById(R.id.navigate_to_map_button);
 
         ImageButton backButton = findViewById(R.id.donationsite_back_button);
         backButton.setOnClickListener(v -> finish());
@@ -63,6 +67,8 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         siteId = getIntent().getStringExtra("siteId");
         String siteName = getIntent().getStringExtra("siteName");
         String siteAddress = getIntent().getStringExtra("siteAddress");
+        siteLatitude = getIntent().getDoubleExtra("siteLatitude", 0.0);
+        siteLongitude = getIntent().getDoubleExtra("siteLongitude", 0.0);
 
         // Log the siteId to ensure it's being passed correctly
         Log.d(TAG, "Site ID: " + siteId);
@@ -93,6 +99,9 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
                 generateReport();
             }
         });
+
+        // Set up navigate to map button
+        navigateToMapButton.setOnClickListener(v -> openMapsGuide());
     }
 
     @Override
@@ -174,6 +183,7 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
 
         eventListLayout.addView(eventView);
     }
+
     private void generateReport() {
         db.collection("reports")
                 .whereEqualTo("donationSiteId", siteId)
@@ -196,18 +206,14 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
                             totalBloodO += report.getAmountOfBloodO();
                             totalBloodAB += report.getAmountOfBloodAB();
                             totalDonors += report.getNumberOfDonors();
-                            totalVolunteers += (report.getNumberOfParticipants() - report.getNumberOfDonors());
-
-                            reportContent.append("Report Title: ").append(report.getReportTitle()).append("\n")
+                            totalVolunteers += (report.getNumberOfParticipants() - report.getNumberOfDonors());reportContent.append("Report Title: ").append(report.getReportTitle()).append("\n")
                                     .append("Blood A: ").append(report.getAmountOfBloodA()).append(" ml\n")
                                     .append("Blood B: ").append(report.getAmountOfBloodB()).append(" ml\n")
                                     .append("Blood O: ").append(report.getAmountOfBloodO()).append(" ml\n")
                                     .append("Blood AB: ").append(report.getAmountOfBloodAB()).append(" ml\n")
                                     .append("Donors: ").append(report.getNumberOfDonors()).append("\n")
                                     .append("Volunteers: ").append(report.getNumberOfParticipants() - report.getNumberOfDonors()).append("\n\n");
-                        }
-
-                        reportContent.append("Total Blood A: ").append(totalBloodA).append(" ml\n")
+                        }reportContent.append("Total Blood A: ").append(totalBloodA).append(" ml\n")
                                 .append("Total Blood B: ").append(totalBloodB).append(" ml\n")
                                 .append("Total Blood O: ").append(totalBloodO).append(" ml\n")
                                 .append("Total Blood AB: ").append(totalBloodAB).append(" ml\n")
@@ -246,5 +252,12 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
             Log.e(TAG, "Error generating report file", e);
             Toast.makeText(this, "Error generating report file.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void openMapsGuide() {
+        Intent intent = new Intent(DonationSiteDetailActivity.this, MapsGuideActivity.class);
+        intent.putExtra("siteLatitude", siteLatitude);
+        intent.putExtra("siteLongitude", siteLongitude);
+        startActivity(intent);
     }
 }

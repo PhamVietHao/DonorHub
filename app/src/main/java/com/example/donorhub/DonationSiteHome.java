@@ -1,6 +1,7 @@
 package com.example.donorhub;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ public class DonationSiteHome extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String siteId;
     private Boolean isAdminSite;
+    private double siteLatitude;
+    private double siteLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,8 @@ public class DonationSiteHome extends AppCompatActivity {
         siteId = getIntent().getStringExtra("siteId");
         String siteName = getIntent().getStringExtra("siteName");
         String siteAddress = getIntent().getStringExtra("siteAddress");
+        siteLatitude = getIntent().getDoubleExtra("siteLatitude", 0.0);
+        siteLongitude = getIntent().getDoubleExtra("siteLongitude", 0.0);
         isAdminSite = getIntent().getBooleanExtra("isAdminSite", false);
 
         // Log the siteId to ensure it's being passed correctly
@@ -68,6 +73,10 @@ public class DonationSiteHome extends AppCompatActivity {
 
         // Load events for this site
         loadEvents(siteId);
+
+        // Set up navigate to map button
+        ImageButton navigateToMapButton = findViewById(R.id.navigate_to_map_button);
+        navigateToMapButton.setOnClickListener(v -> openMapsGuide());
     }
 
     @Override
@@ -210,5 +219,12 @@ public class DonationSiteHome extends AppCompatActivity {
                     .addOnFailureListener(e -> Log.e(TAG, "Error cancelling participation", e));
         }
         onResume();
+    }
+
+    private void openMapsGuide() {
+        Intent intent = new Intent(DonationSiteHome.this, MapsGuideActivity.class);
+        intent.putExtra("siteLatitude", siteLatitude);
+        intent.putExtra("siteLongitude", siteLongitude);
+        startActivity(intent);
     }
 }
