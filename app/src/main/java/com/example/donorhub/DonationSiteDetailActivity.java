@@ -1,8 +1,11 @@
 package com.example.donorhub;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +51,9 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donation_site_detail);
+
+        // Create notification channel
+        createNotificationChannel();
 
         // Initialize UI elements
         siteNameTextView = findViewById(R.id.site_name);
@@ -148,6 +154,7 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         Button joinAsDonorButton = eventView.findViewById(R.id.join_as_donor_button);
         Button joinAsVolunteerButton = eventView.findViewById(R.id.join_as_volunteer_button);
         Button cancelJoiningButton = eventView.findViewById(R.id.cancel_joining_button);
+        Button deleteEventButton = eventView.findViewById(R.id.delete_event_button);
 
         eventNameTextView.setText(event.getEventName());
 
@@ -167,6 +174,10 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         cancelJoiningButton.setVisibility(View.GONE);
         eventStatusTextView.setVisibility(View.GONE);
 
+        // Set up delete button
+        deleteEventButton.setVisibility(View.VISIBLE);
+        deleteEventButton.setOnClickListener(v -> showDeleteConfirmationDialog(event.getId()));
+
         eventView.setOnClickListener(v -> {
             Intent intent = new Intent(DonationSiteDetailActivity.this, EventDetailActivity.class);
             intent.putExtra("eventId", event.getId());
@@ -182,6 +193,39 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         });
 
         eventListLayout.addView(eventView);
+    }
+
+    private void showDeleteConfirmationDialog(String eventId) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Event")
+                .setMessage("Are you sure you want to delete this event?")
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> deleteEvent(eventId))
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+    }
+
+    private void deleteEvent(String eventId) {
+        db.collection("events").document(eventId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Event successfully deleted!");
+                    Toast.makeText(DonationSiteDetailActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
+                    loadEvents(siteId); // Refresh the event list
+
+                    // Send a broadcast to notify that the event has been deleted
+                    sendEventDeletedNotification(eventId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error deleting event", e);
+                    Toast.makeText(DonationSiteDetailActivity.this, "Error deleting event", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void sendEventDeletedNotification(String eventId) {
+        Intent intent = new Intent(this, NotificationReceiver.class);
+        intent.putExtra("title", "Event Deleted");
+        intent.putExtra("message", "The event with ID " + eventId + " has been deleted.");
+        sendBroadcast(intent);
     }
 
     private void generateReport() {
@@ -206,14 +250,18 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
                             totalBloodO += report.getAmountOfBloodO();
                             totalBloodAB += report.getAmountOfBloodAB();
                             totalDonors += report.getNumberOfDonors();
-                            totalVolunteers += (report.getNumberOfParticipants() - report.getNumberOfDonors());reportContent.append("Report Title: ").append(report.getReportTitle()).append("\n")
+                            totalVolunteers += (report.getNumberOfParticipants() - report.getNumberOfDonors());
+
+                            reportContent.append("Report Title: ").append(report.getReportTitle()).append("\n")
                                     .append("Blood A: ").append(report.getAmountOfBloodA()).append(" ml\n")
                                     .append("Blood B: ").append(report.getAmountOfBloodB()).append(" ml\n")
                                     .append("Blood O: ").append(report.getAmountOfBloodO()).append(" ml\n")
                                     .append("Blood AB: ").append(report.getAmountOfBloodAB()).append(" ml\n")
                                     .append("Donors: ").append(report.getNumberOfDonors()).append("\n")
                                     .append("Volunteers: ").append(report.getNumberOfParticipants() - report.getNumberOfDonors()).append("\n\n");
-                        }reportContent.append("Total Blood A: ").append(totalBloodA).append(" ml\n")
+                        }
+
+                        reportContent.append("Total Blood A: ").append(totalBloodA).append(" ml\n")
                                 .append("Total Blood B: ").append(totalBloodB).append(" ml\n")
                                 .append("Total Blood O: ").append(totalBloodO).append(" ml\n")
                                 .append("Total Blood AB: ").append(totalBloodAB).append(" ml\n")
@@ -259,5 +307,18 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         intent.putExtra("siteLatitude", siteLatitude);
         intent.putExtra("siteLongitude", siteLongitude);
         startActivity(intent);
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "DonorHub Notifications";
+            String description = "Channel for DonorHub notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("donorhub_notifications", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

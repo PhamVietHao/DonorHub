@@ -1,7 +1,15 @@
 package com.example.donorhub;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,8 +18,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.donorhub.Models.Event;
 import com.example.donorhub.Models.User;
@@ -29,6 +43,7 @@ import java.util.Locale;
 public class DonationSiteHome extends AppCompatActivity {
 
     private static final String TAG = "DonationSiteDetail";
+    private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
     private TextView siteNameTextView;
     private TextView siteAddressTextView;
     private LinearLayout eventListLayout;
@@ -71,6 +86,9 @@ public class DonationSiteHome extends AppCompatActivity {
         siteNameTextView.setText(siteName);
         siteAddressTextView.setText(siteAddress);
 
+        // Request notification permission
+        requestNotificationPermission();
+
         // Load events for this site
         loadEvents(siteId);
 
@@ -84,6 +102,28 @@ public class DonationSiteHome extends AppCompatActivity {
         super.onResume();
         // Reload events when the activity resumes
         loadEvents(siteId);
+    }
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                Log.d(TAG, "Notification permission granted");
+            } else {
+                // Permission denied
+                Log.d(TAG, "Notification permission denied");
+            }
+        }
     }
 
     private void loadEvents(String siteId) {
@@ -182,6 +222,9 @@ public class DonationSiteHome extends AppCompatActivity {
             Log.e(TAG, "Error parsing date and time", e);
         }
 
+        // Schedule notifications for event start and end
+        scheduleEventNotifications(event);
+
         eventListLayout.addView(eventView);
     }
 
@@ -198,13 +241,14 @@ public class DonationSiteHome extends AppCompatActivity {
                 .setPositiveButton("Yes", (dialog, which) -> handleUserAction(event, userId, action))
                 .setNegativeButton("No", (dialog, which) -> onResume())
                 .show();
-    }
-
-    private void handleUserAction(Event event, String userId, String action) {
+    }private void handleUserAction(Event event, String userId, String action) {
         if (action.equals("donor")) {
             event.getUserIds().add(userId);
             db.collection("events").document(event.getId()).update("userIds", event.getUserIds())
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User joined as donor"))
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "User joined as donor");
+                        checkDonorMilestones(event);
+                    })
                     .addOnFailureListener(e -> Log.e(TAG, "Error joining as donor", e));
         } else if (action.equals("volunteer")) {
             event.getUserIdsVolunteer().add(userId);
@@ -219,6 +263,76 @@ public class DonationSiteHome extends AppCompatActivity {
                     .addOnFailureListener(e -> Log.e(TAG, "Error cancelling participation", e));
         }
         onResume();
+    }
+
+    private void checkDonorMilestones(Event event) {
+        int donorCount = event.getUserIds().size();
+        if (donorCount == 10 || donorCount == 20 || donorCount == 30 || donorCount == 40 || donorCount == 50) {
+            sendNotification("Milestone Reached!", "Yay! The event has reached " + donorCount + " donors!");
+        }
+    }
+
+    private void sendNotification(String title, String message) {
+        String channelId = "donorhub_notifications";
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "DonorHub Notifications";
+            String description = "Notifications for DonorHub app";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManagerSystem = getSystemService(NotificationManager.class);
+            notificationManagerSystem.createNotificationChannel(channel);
+        }
+
+        // Check for notification permission only if API level is 33 or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted, handle accordingly
+                Log.d(TAG, "Notification permission not granted");
+                return;
+            }
+        }
+
+        Intent intent = new Intent(this, DonationSiteHome.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        int notificationId = (int) System.currentTimeMillis();
+        notificationManager.notify(notificationId, builder.build());
+    }
+
+    private void scheduleEventNotifications(Event event) {
+        long startTime = event.getStartTime().getTime();
+        long endTime = event.getEndTime().getTime();
+
+        scheduleNotification("Event Starting", "The event " + event.getEventName() + " is starting now!", startTime);
+        scheduleNotification("Event Ending", "The event " + event.getEventName() + " has ended.", endTime);
+    }
+
+    private void scheduleNotification(String title, String message, long time) {
+        Intent intent = new Intent(this, NotificationReceiver.class);
+        intent.putExtra("title", title);
+        intent.putExtra("message", message);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent);
     }
 
     private void openMapsGuide() {
