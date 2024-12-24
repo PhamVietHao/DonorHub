@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 public class DonationSiteDetailActivity extends AppCompatActivity {
@@ -174,9 +175,14 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         cancelJoiningButton.setVisibility(View.GONE);
         eventStatusTextView.setVisibility(View.GONE);
 
-        // Set up delete button
-        deleteEventButton.setVisibility(View.VISIBLE);
-        deleteEventButton.setOnClickListener(v -> showDeleteConfirmationDialog(event.getId()));
+        // Check if the event has ended
+        Date currentDate = new Date();
+        if (currentDate.after(event.getStartDate()) && currentDate.after(event.getEndTime())) {
+            deleteEventButton.setVisibility(View.GONE);
+        } else {
+            deleteEventButton.setVisibility(View.VISIBLE);
+            deleteEventButton.setOnClickListener(v -> showDeleteConfirmationDialog(event.getId(), event.getEventName()));
+        }
 
         eventView.setOnClickListener(v -> {
             Intent intent = new Intent(DonationSiteDetailActivity.this, EventDetailActivity.class);
@@ -195,16 +201,16 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         eventListLayout.addView(eventView);
     }
 
-    private void showDeleteConfirmationDialog(String eventId) {
+    private void showDeleteConfirmationDialog(String eventId, String eventName) {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Event")
                 .setMessage("Are you sure you want to delete this event?")
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> deleteEvent(eventId))
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> deleteEvent(eventId, eventName))
                 .setNegativeButton(android.R.string.no, null)
                 .show();
     }
 
-    private void deleteEvent(String eventId) {
+    private void deleteEvent(String eventId, String eventName) {
         db.collection("events").document(eventId)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
@@ -213,7 +219,7 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
                     loadEvents(siteId); // Refresh the event list
 
                     // Send a broadcast to notify that the event has been deleted
-                    sendEventDeletedNotification(eventId);
+                    sendEventDeletedNotification(eventName);
                 })
                 .addOnFailureListener(e -> {
                     Log.w(TAG, "Error deleting event", e);
@@ -221,10 +227,10 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
                 });
     }
 
-    private void sendEventDeletedNotification(String eventId) {
+    private void sendEventDeletedNotification(String eventName) {
         Intent intent = new Intent(this, NotificationReceiver.class);
-        intent.putExtra("title", "Event Deleted");
-        intent.putExtra("message", "The event with ID " + eventId + " has been deleted.");
+        intent.putExtra("title", "Event Cancelled");
+        intent.putExtra("message", "The event \"" + eventName + "\" has been cancelled. We sincerely apologize for any inconvenience.");
         sendBroadcast(intent);
     }
 
