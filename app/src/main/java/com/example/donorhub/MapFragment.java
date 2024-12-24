@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import com.example.donorhub.Models.DonationSite;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,6 +38,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import android.widget.ImageButton;
+
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -42,6 +47,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private List<DonationSite> donationSites = new ArrayList<>();
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private float currentZoomLevel = 15.0f; // Initial zoom level
+    private LocationCallback locationCallback;
 
     @Nullable
     @Override
@@ -65,6 +72,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
 
+        // Set up the zoom out button
+        ImageButton zoomOutButton = view.findViewById(R.id.zoom_out_button);
+        zoomOutButton.setOnClickListener(v -> zoomOutMap());
+
         return view;
     }
 
@@ -73,6 +84,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onResume();
         // Fetch the current location every time the fragment is resumed
         getCurrentLocation();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Remove location updates when the fragment is paused
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
     }
 
     @Override
@@ -91,6 +111,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        // Enable location layer if permissions are granted
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
     }
 
     private void getCurrentLocation() {
@@ -99,7 +123,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     .addOnSuccessListener(location -> {
                         if (location != null) {
                             LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+                            Log.d("MapFragment", "Current location: " + currentLocation.toString());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, currentZoomLevel));
 
                             // Add a custom marker for the user's current location with scaled bitmap
                             mMap.addMarker(new MarkerOptions()
@@ -109,7 +134,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                             loadDonationSites(currentLocation);
                         } else {
-                            Log.e("MapFragment", "Current location is null");
+                            Log.e("MapFragment", "Current location is null, requesting new location");
+                            requestNewLocation();
                         }
                     })
                     .addOnFailureListener(e -> Log.e("MapFragment", "Error getting current location", e));
@@ -117,6 +143,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             // Request location permissions if not granted
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
+    }
+
+    private void requestNewLocation() {
+        LocationRequest locationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10000)
+                .setFastestInterval(5000);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if (location != null) {
+                    LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    Log.d("MapFragment", "New location: " + currentLocation.toString());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, currentZoomLevel));
+
+                    // Add a custom marker for the user's current location with scaled bitmap
+                    mMap.addMarker(new MarkerOptions()
+                            .position(currentLocation)
+                            .title("Your Location")
+                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.user, 100, 100))); // Adjust width and height as needed
+
+                    loadDonationSites(currentLocation);
+                    fusedLocationClient.removeLocationUpdates(this);
+                }
+            }
+        };
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, int width, int height) {
@@ -153,5 +209,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         Log.e("MapFragment", "Error getting donation sites: ", task.getException());
                     }
                 });
+    }
+
+    private void zoomOutMap() {
+        if (mMap != null) {
+            currentZoomLevel -= 1.0f; // Decrease zoom level by 1 each time
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(currentZoomLevel));
+        }
     }
 }
