@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import android.widget.CheckBox;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,13 +37,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class DonationSiteHome extends AppCompatActivity {
 
     private static final String TAG = "DonationSiteDetail";
-    private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
     private TextView siteNameTextView;
     private TextView siteAddressTextView;
     private LinearLayout eventListLayout;
@@ -53,6 +53,11 @@ public class DonationSiteHome extends AppCompatActivity {
     private Boolean isAdminSite;
     private double siteLatitude;
     private double siteLongitude;
+    private CheckBox filterA;
+    private CheckBox filterB;
+    private CheckBox filterAB;
+    private CheckBox filterO;
+    private CheckBox filterOngoing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +68,12 @@ public class DonationSiteHome extends AppCompatActivity {
         siteNameTextView = findViewById(R.id.site_name);
         siteAddressTextView = findViewById(R.id.site_address);
         eventListLayout = findViewById(R.id.event_list);
+
+        filterA = findViewById(R.id.filter_a);
+        filterB = findViewById(R.id.filter_b);
+        filterAB = findViewById(R.id.filter_ab);
+        filterO = findViewById(R.id.filter_o);
+        filterOngoing = findViewById(R.id.filter_ongoing);
 
         ImageButton backButton = findViewById(R.id.donationsite_back_button);
         backButton.setOnClickListener(v -> finish());
@@ -86,15 +97,19 @@ public class DonationSiteHome extends AppCompatActivity {
         siteNameTextView.setText(siteName);
         siteAddressTextView.setText(siteAddress);
 
-        // Request notification permission
-        requestNotificationPermission();
-
         // Load events for this site
         loadEvents(siteId);
 
         // Set up navigate to map button
         ImageButton navigateToMapButton = findViewById(R.id.navigate_to_map_button);
         navigateToMapButton.setOnClickListener(v -> openMapsGuide());
+
+        // Add listeners to checkboxes
+        filterA.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
+        filterB.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
+        filterAB.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
+        filterO.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
+        filterOngoing.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
     }
 
     @Override
@@ -102,28 +117,6 @@ public class DonationSiteHome extends AppCompatActivity {
         super.onResume();
         // Reload events when the activity resumes
         loadEvents(siteId);
-    }
-
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
-                Log.d(TAG, "Notification permission granted");
-            } else {
-                // Permission denied
-                Log.d(TAG, "Notification permission denied");
-            }
-        }
     }
 
     private void loadEvents(String siteId) {
@@ -136,12 +129,51 @@ public class DonationSiteHome extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Event event = document.toObject(Event.class);
                             Log.d(TAG, "Event loaded: " + event.getEventName());
-                            addEventToLayout(event);
+                            if (shouldDisplayEvent(event)) {
+                                addEventToLayout(event);
+                            }
                         }
                     } else {
                         Log.e(TAG, "Error getting events: ", task.getException());
                     }
                 });
+    }
+
+    private boolean shouldDisplayEvent(Event event) {
+        boolean matchesBloodType = false;
+
+        // Check if any blood type filter is applied
+        boolean bloodTypeFilterApplied = filterA.isChecked() || filterB.isChecked() || filterAB.isChecked() || filterO.isChecked();
+
+        if (!bloodTypeFilterApplied || event.getBloodTypes().contains("ALL")) {
+            matchesBloodType = true;
+        } else {
+            if (filterA.isChecked() && event.getBloodTypes().contains("A")) {
+                matchesBloodType = true;
+            }
+            if (filterB.isChecked() && event.getBloodTypes().contains("B")) {
+                matchesBloodType = true;
+            }
+            if (filterAB.isChecked() && event.getBloodTypes().contains("AB")) {
+                matchesBloodType = true;
+            }
+            if (filterO.isChecked() && event.getBloodTypes().contains("O")) {
+                matchesBloodType = true;
+            }
+        }
+
+        // Check if the event is ongoing
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(event.getStartDate());
+        Calendar endTimeCalendar = Calendar.getInstance();
+        endTimeCalendar.setTime(event.getEndTime());
+        endCalendar.set(Calendar.HOUR_OF_DAY, endTimeCalendar.get(Calendar.HOUR_OF_DAY));
+        endCalendar.set(Calendar.MINUTE, endTimeCalendar.get(Calendar.MINUTE));
+        Date eventEndDateTime = endCalendar.getTime();
+
+        boolean isOngoing = !filterOngoing.isChecked() || new Date().before(eventEndDateTime);
+
+        return matchesBloodType && isOngoing;
     }
 
     private void addEventToLayout(Event event) {
@@ -241,14 +273,15 @@ public class DonationSiteHome extends AppCompatActivity {
                 .setPositiveButton("Yes", (dialog, which) -> handleUserAction(event, userId, action))
                 .setNegativeButton("No", (dialog, which) -> onResume())
                 .show();
-    }private void handleUserAction(Event event, String userId, String action) {
+    }
+
+    private void handleUserAction(Event event, String userId, String action) {
         if (action.equals("donor")) {
             event.getUserIds().add(userId);
             db.collection("events").document(event.getId()).update("userIds", event.getUserIds())
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "User joined as donor");
-                        checkDonorMilestones(event);
-                    })
+                        checkDonorMilestones(event);})
                     .addOnFailureListener(e -> Log.e(TAG, "Error joining as donor", e));
         } else if (action.equals("volunteer")) {
             event.getUserIdsVolunteer().add(userId);
@@ -312,11 +345,33 @@ public class DonationSiteHome extends AppCompatActivity {
     }
 
     private void scheduleEventNotifications(Event event) {
-        long startTime = event.getStartTime().getTime();
-        long endTime = event.getEndTime().getTime();
+        // Combine startDate and startTime
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.setTime(event.getStartDate());
+        Calendar startTimeCalendar = Calendar.getInstance();
+        startTimeCalendar.setTime(event.getStartTime());
+        startCalendar.set(Calendar.HOUR_OF_DAY, startTimeCalendar.get(Calendar.HOUR_OF_DAY));
+        startCalendar.set(Calendar.MINUTE, startTimeCalendar.get(Calendar.MINUTE));
+        long startTime = startCalendar.getTimeInMillis();
 
-        scheduleNotification("Event Starting", "The event " + event.getEventName() + " is starting now!", startTime);
-        scheduleNotification("Event Ending", "The event " + event.getEventName() + " has ended.", endTime);
+        // Combine startDate and endTime
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(event.getStartDate());
+        Calendar endTimeCalendar = Calendar.getInstance();
+        endTimeCalendar.setTime(event.getEndTime());
+        endCalendar.set(Calendar.HOUR_OF_DAY, endTimeCalendar.get(Calendar.HOUR_OF_DAY));
+        endCalendar.set(Calendar.MINUTE, endTimeCalendar.get(Calendar.MINUTE));
+        long endTime = endCalendar.getTimeInMillis();
+
+        long currentTime = System.currentTimeMillis();
+
+        // Schedule notifications only for future events
+        if (startTime > currentTime) {
+            scheduleNotification("Event Starting", "The event " + event.getEventName() + " is starting now!", startTime);
+        }
+        if (endTime > currentTime) {
+            scheduleNotification("Event Ending", "The event " + event.getEventName() + " has ended.", endTime);
+        }
     }
 
     private void scheduleNotification(String title, String message, long time) {
@@ -326,7 +381,7 @@ public class DonationSiteHome extends AppCompatActivity {
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 this,
-                0,
+                (int) time, // Unique request code for each notification
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
