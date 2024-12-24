@@ -6,7 +6,7 @@
         android:title="Home" />
     <item
         android:id="@+id/map"
-        android:icon="@drawable/image1"
+        android:icon="@drawable/ic_map"
         android:title="Map" />
     <item
         android:id="@+id/donation_site"
@@ -14,8 +14,6 @@
         android:title="Donation Site" />
     <item
         android:id="@+id/profile"
-        android:icon="@drawable/image1"
+        android:icon="@drawable/ic_profile"
         android:title="Profile" />
-
-
 </menu>

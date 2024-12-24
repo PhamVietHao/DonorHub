@@ -37,6 +37,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.volley)
+    implementation(libs.android.maps.utils)
+    implementation(libs.play.services.maps.v1802)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.play.services.maps)

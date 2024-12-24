@@ -27,6 +27,15 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.maps.android.PolyUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
 
 public class MapsGuideActivity extends AppCompatActivity {
 
@@ -97,32 +106,29 @@ public class MapsGuideActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.clear(); // Clear existing markers and polylines
-                        mMap.addMarker(new MarkerOptions()
-                                .position(userLocation)
-                                .title("Your Location")
-                                .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("user", 100, 100))));
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.clear(); // Clear existing markers and polylines
+                    mMap.addMarker(new MarkerOptions()
+                            .position(userLocation)
+                            .title("Your Location")
+                            .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("user", 100, 100))));
 
-                        // Add a marker at the site location again
-                        mMap.addMarker(new MarkerOptions().position(siteLocation).title("Donation Site"));
+                    // Add a marker at the site location again
+                    mMap.addMarker(new MarkerOptions().position(siteLocation).title("Donation Site"));
 
-                        // Draw the route from user location to site location
-                        drawRoute(userLocation, siteLocation);
+                    // Fetch and draw the route from user location to site location
+                    fetchRoute(userLocation, siteLocation);
 
-                        // Adjust the zoom level to show both locations
-                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                        builder.include(userLocation);
-                        builder.include(siteLocation);
-                        LatLngBounds bounds = builder.build();
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
-                    } else {
-                        Toast.makeText(MapsGuideActivity.this, "Unable to get current location", Toast.LENGTH_SHORT).show();
-                    }
+                    // Adjust the zoom level to show both locations
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(userLocation);
+                    builder.include(siteLocation);
+                    LatLngBounds bounds = builder.build();
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+                } else {
+                    Toast.makeText(MapsGuideActivity.this, "Unable to get current location", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -133,13 +139,54 @@ public class MapsGuideActivity extends AppCompatActivity {
         return Bitmap.createScaledBitmap(imageBitmap, width, height, false);
     }
 
-    private void drawRoute(LatLng origin, LatLng destination) {
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .add(origin)
-                .add(destination)
-                .color(ContextCompat.getColor(this, R.color.bold_pink))
-                .width(5);
-        mMap.addPolyline(polylineOptions);
+    private void fetchRoute(LatLng origin, LatLng destination) {
+        String apiKey = getString(R.string.google_maps_key); // Your API key
+        String urlString = "https://maps.googleapis.com/maps/api/directions/json?origin=" + origin.latitude + "," + origin.longitude + "&destination=" + destination.latitude + "," + destination.longitude + "&key=" + apiKey;
+
+        new Thread(() -> {
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                Log.d(TAG, "Directions API response: " + jsonResponse.toString()); // Log the response
+                JSONArray routes = jsonResponse.getJSONArray("routes");
+                if (routes.length() > 0) {
+                    JSONObject route = routes.getJSONObject(0);
+                    JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
+                    String points = overviewPolyline.getString("points");
+                    runOnUiThread(() -> drawRoute(points));
+                } else {
+                    Log.d(TAG, "No routes found");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error fetching route: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    private void drawRoute(String encodedPolyline) {
+        List<LatLng> points = PolyUtil.decode(encodedPolyline);
+        if (points != null && !points.isEmpty()) {
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .addAll(points)
+                    .color(ContextCompat.getColor(this, R.color.bold_pink))
+                    .width(5);
+            mMap.addPolyline(polylineOptions);
+            Log.d(TAG, "Route drawn successfully");
+        } else {
+            Log.d(TAG, "No points to draw");
+        }
     }
 
     @Override
