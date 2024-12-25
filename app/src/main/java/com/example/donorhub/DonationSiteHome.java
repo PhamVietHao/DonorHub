@@ -64,6 +64,13 @@ public class DonationSiteHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donationsite_detail_home);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+        }
+
+
         // Initialize UI elements
         siteNameTextView = findViewById(R.id.site_name);
         siteAddressTextView = findViewById(R.id.site_address);
@@ -365,6 +372,7 @@ public class DonationSiteHome extends AppCompatActivity {
 
         long currentTime = System.currentTimeMillis();
 
+
         // Schedule notifications only for future events
         if (startTime > currentTime) {
             scheduleNotification("Event Starting", "The event " + event.getEventName() + " is starting now!", startTime);
@@ -389,7 +397,17 @@ public class DonationSiteHome extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent);
     }
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Notification permission granted");
+            } else {
+                Log.d(TAG, "Notification permission denied");
+            }
+        }
+    }
     private void openMapsGuide() {
         Intent intent = new Intent(DonationSiteHome.this, MapsGuideActivity.class);
         intent.putExtra("siteLatitude", siteLatitude);
