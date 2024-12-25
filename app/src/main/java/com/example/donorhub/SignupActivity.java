@@ -76,6 +76,7 @@ public class SignupActivity extends AppCompatActivity {
                                 db.collection("users").document(firebaseUser.getUid()).set(user)
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d(TAG, "User data successfully written!");
+                                            Toast.makeText(SignupActivity.this, "Sign up account successfully", Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(SignupActivity.this, MainActivity.class);
                                             startActivity(intent);
                                             finish();

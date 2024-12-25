@@ -151,6 +151,7 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         TextView eventNameTextView = eventView.findViewById(R.id.event_name);
         TextView eventDateTextView = eventView.findViewById(R.id.event_date);
         TextView eventTimeTextView = eventView.findViewById(R.id.event_time);
+        TextView eventBloodTypesTextView = eventView.findViewById(R.id.event_blood_types);
         TextView eventStatusTextView = eventView.findViewById(R.id.event_status);
         Button joinAsDonorButton = eventView.findViewById(R.id.join_as_donor_button);
         Button joinAsVolunteerButton = eventView.findViewById(R.id.join_as_volunteer_button);
@@ -168,6 +169,10 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
 
         eventDateTextView.setText("Date: " + formattedDate);
         eventTimeTextView.setText("Time: " + formattedStartTime + " - " + formattedEndTime);
+
+        // Display the required blood types
+        eventBloodTypesTextView.setText("Required Blood Types: " + String.join(", ", event.getBloodTypes()));
+        eventBloodTypesTextView.setVisibility(View.VISIBLE);
 
         // Hide the buttons and event status
         joinAsDonorButton.setVisibility(View.GONE);
