@@ -7,13 +7,9 @@
     <string name="google_maps_key">AIzaSyD8GWn2ud0KyhaTmbLaaS9xrOscDGyzaBY</string>
 
     <string-array name="blood_types_array">
-        <item>A+</item>
-        <item>A-</item>
-        <item>B+</item>
-        <item>B-</item>
-        <item>AB+</item>
-        <item>AB-</item>
-        <item>O+</item>
-        <item>O-</item>
+        <item>A</item>
+        <item>B</item>
+        <item>AB</item>
+        <item>O</item>
     </string-array>
 </resources>

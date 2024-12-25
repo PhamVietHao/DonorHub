@@ -1,6 +1,10 @@
 package com.example.donorhub;
 
+import android.Manifest;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+
+    private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
 
     private TextView greetingText;
     private LinearLayout donationListLayout;
@@ -99,6 +107,9 @@ public class HomeFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
+        // Check and request notification permission
+        checkNotificationPermission();
+
         return view;
     }
 
@@ -152,6 +163,24 @@ public class HomeFragment extends Fragment {
             if (site.getName().toLowerCase().contains(query.toLowerCase()) ||
                     site.getAddress().toLowerCase().contains(query.toLowerCase())) {
                 addDonationSiteToLayout(site);
+            }
+        }
+    }
+
+    private void checkNotificationPermission() {
+        if (!NotificationManagerCompat.from(getContext()).areNotificationsEnabled()) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("HomeFragment", "Notification permission granted");
+            } else {
+                Log.d("HomeFragment", "Notification permission denied");
             }
         }
     }

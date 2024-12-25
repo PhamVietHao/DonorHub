@@ -15,7 +15,8 @@
         android:contentDescription="Back to Donation Sites"
         android:elevation="4dp"
         android:scaleType="centerInside"
-        android:layout_marginBottom="16dp" />
+        android:backgroundTint="@color/less_pink"
+        android:layout_marginBottom="16dp"/>
 
     <!-- Title -->
     <TextView
@@ -24,7 +25,7 @@
         android:text="Create Event"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/bold_pink"
         android:layout_gravity="center_horizontal"
         android:paddingBottom="16dp" />
 

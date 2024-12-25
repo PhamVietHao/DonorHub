@@ -168,9 +168,11 @@ public class MapsGuideActivity extends AppCompatActivity {
                     runOnUiThread(() -> drawRoute(points));
                 } else {
                     Log.d(TAG, "No routes found");
+                    runOnUiThread(() -> drawFallbackRoute());
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error fetching route: " + e.getMessage());
+                runOnUiThread(() -> drawFallbackRoute());
             }
         }).start();
     }
@@ -186,6 +188,19 @@ public class MapsGuideActivity extends AppCompatActivity {
             Log.d(TAG, "Route drawn successfully");
         } else {
             Log.d(TAG, "No points to draw");
+        }
+    }
+
+    private void drawFallbackRoute() {
+        if (userLocation != null && siteLocation != null) {
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .add(userLocation, siteLocation)
+                    .color(ContextCompat.getColor(this, R.color.bold_pink))
+                    .width(5);
+            mMap.addPolyline(polylineOptions);
+            Log.d(TAG, "Fallback route drawn successfully");
+        } else {
+            Log.d(TAG, "User or site location is null, cannot draw fallback route");
         }
     }
 

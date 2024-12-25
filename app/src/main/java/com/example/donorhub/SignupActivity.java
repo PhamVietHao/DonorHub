@@ -63,6 +63,8 @@ public class SignupActivity extends AppCompatActivity {
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || bloodType.isEmpty()) {
             Toast.makeText(SignupActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        } else if (!isValidPassword(password)) {
+            Toast.makeText(SignupActivity.this, "Password must be at least 8 characters long and contain at least one unique character, one uppercase letter, and one number", Toast.LENGTH_SHORT).show();
         } else {
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -89,6 +91,13 @@ public class SignupActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    private boolean isValidPassword(String password) {
+        return password.length() >= 8 &&
+                password.matches(".*[A-Z].*") && // At least one uppercase letter
+                password.matches(".*[0-9].*") && // At least one number
+                password.matches(".*[^a-zA-Z0-9].*"); // At least one unique character
     }
 
     private void navigateToSignin() {
