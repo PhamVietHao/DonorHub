@@ -10,6 +10,7 @@ public class Report {
     private int amountOfBloodAB;
     private int numberOfParticipants;
     private int numberOfDonors;
+    private int numberOfVolunteers; // New field
     private String reportTitle;
 
     // No-argument constructor
@@ -18,7 +19,7 @@ public class Report {
     }
 
     // Parameterized constructor
-    public Report(String id, String eventId, String donationSiteId, int amountOfBloodA, int amountOfBloodB, int amountOfBloodO, int amountOfBloodAB, int numberOfParticipants, int numberOfDonors, String reportTitle) {
+    public Report(String id, String eventId, String donationSiteId, int amountOfBloodA, int amountOfBloodB, int amountOfBloodO, int amountOfBloodAB, int numberOfParticipants, int numberOfDonors, int numberOfVolunteers, String reportTitle) {
         this.id = id;
         this.eventId = eventId;
         this.donationSiteId = donationSiteId;
@@ -28,6 +29,7 @@ public class Report {
         this.amountOfBloodAB = amountOfBloodAB;
         this.numberOfParticipants = numberOfParticipants;
         this.numberOfDonors = numberOfDonors;
+        this.numberOfVolunteers = numberOfVolunteers; // Initialize new field
         this.reportTitle = reportTitle;
     }
 
@@ -102,6 +104,14 @@ public class Report {
 
     public void setNumberOfDonors(int numberOfDonors) {
         this.numberOfDonors = numberOfDonors;
+    }
+
+    public int getNumberOfVolunteers() {
+        return numberOfVolunteers;
+    }
+
+    public void setNumberOfVolunteers(int numberOfVolunteers) {
+        this.numberOfVolunteers = numberOfVolunteers;
     }
 
     public String getReportTitle() {

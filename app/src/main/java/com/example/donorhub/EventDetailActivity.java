@@ -321,6 +321,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 bloodAmounts[3],
                 donorCount + volunteerCount,
                 donorCount,
+                volunteerCount,
                 eventName + " Report"
         );
 
@@ -350,6 +351,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 "Donation Site ID: " + report.getDonationSiteId() + "\n" +
                 "Number of Participants: " + report.getNumberOfParticipants() + "\n" +
                 "Number of Donors: " + report.getNumberOfDonors() + "\n" +
+                "Number of Volunteers: " + report.getNumberOfVolunteers() + "\n" +
                 "Amount of Blood A: " + report.getAmountOfBloodA() + " ml\n" +
                 "Amount of Blood B: " + report.getAmountOfBloodB() + " ml\n" +
                 "Amount of Blood O: " + report.getAmountOfBloodO() + " ml\n" +
