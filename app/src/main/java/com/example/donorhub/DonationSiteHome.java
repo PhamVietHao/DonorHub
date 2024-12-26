@@ -70,7 +70,6 @@ public class DonationSiteHome extends AppCompatActivity {
             }
         }
 
-
         // Initialize UI elements
         siteNameTextView = findViewById(R.id.site_name);
         siteAddressTextView = findViewById(R.id.site_address);
@@ -111,11 +110,43 @@ public class DonationSiteHome extends AppCompatActivity {
         ImageButton navigateToMapButton = findViewById(R.id.navigate_to_map_button);
         navigateToMapButton.setOnClickListener(v -> openMapsGuide());
 
-        // Add listeners to checkboxes
-        filterA.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
-        filterB.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
-        filterAB.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
-        filterO.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
+        // Add listeners to checkboxes to ensure only one blood type filter is selected at a time
+        filterA.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                filterB.setChecked(false);
+                filterAB.setChecked(false);
+                filterO.setChecked(false);
+            }
+            loadEvents(siteId);
+        });
+
+        filterB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                filterA.setChecked(false);
+                filterAB.setChecked(false);
+                filterO.setChecked(false);
+            }
+            loadEvents(siteId);
+        });
+
+        filterAB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                filterA.setChecked(false);
+                filterB.setChecked(false);
+                filterO.setChecked(false);
+            }
+            loadEvents(siteId);
+        });
+
+        filterO.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                filterA.setChecked(false);
+                filterB.setChecked(false);
+                filterAB.setChecked(false);
+            }
+            loadEvents(siteId);
+        });
+
         filterOngoing.setOnCheckedChangeListener((buttonView, isChecked) -> loadEvents(siteId));
     }
 
